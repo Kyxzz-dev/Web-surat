@@ -135,7 +135,7 @@ Ubah `timezone` di `config/app.php` sesuai kebutuhan. Lihat daftar zona waktu di
 ![Screenshot](docs/laravel-surat-menyurat-v1.png)
 
 ## 🎥 Demo
-Tonton demo proyek ini di [YouTube](https://www.youtube.com/watch?v=dyatVEGavxo).
+Tonton demo proyek ini di [YouTube](https://youtu.be/DtPqDZT-1VA?si=UJq7C92Ktivv82sZ).
 
 ## 🎨 Template
 Proyek ini pakai template admin [Sneat](https://github.com/themeselection/sneat-html-admin-template-free).
