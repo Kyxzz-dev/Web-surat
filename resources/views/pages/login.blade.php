@@ -90,6 +90,10 @@
                         <div class="mt-2">
                             <button class="btn btn-primary d-grid w-100" type="submit">{{ __('menu.auth.login') }}</button>
                         </div>
+                        <p class="text-center mt-3">
+                            Belum punya akun?
+                                <a href="{{ route('register') }}">{{ __('menu.auth.register') }}</a>
+                        </p>
                     </form>
                 </div>
             </div>

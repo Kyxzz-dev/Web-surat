@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\LetterType;
 use App\Helpers\GeneralHelper;
 use App\Http\Requests\UpdateConfigRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -18,24 +17,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use JetBrains\PhpStorm\NoReturn;
 
 class PageController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return View
-     */
     public function index(Request $request): View
     {
-        $todayIncomingLetter = Letter::incoming()->today()->count();
-        $todayOutgoingLetter = Letter::outgoing()->today()->count();
-        $todayDispositionLetter = Disposition::today()->count();
-        $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter + $todayDispositionLetter;
+        $user = Auth::user(); // Ambil user login
+        $userId = $user->id;
 
-        $yesterdayIncomingLetter = Letter::incoming()->yesterday()->count();
-        $yesterdayOutgoingLetter = Letter::outgoing()->yesterday()->count();
-        $yesterdayDispositionLetter = Disposition::yesterday()->count();
+        // Pengecekan role langsung via string
+        $isAdmin = $user->role === 'admin';
+
+        if ($isAdmin) {
+            $todayIncomingLetter = Letter::incoming()->today()->count();
+            $todayOutgoingLetter = Letter::outgoing()->today()->count();
+            $todayDispositionLetter = Disposition::today()->count();
+
+            $yesterdayIncomingLetter = Letter::incoming()->yesterday()->count();
+            $yesterdayOutgoingLetter = Letter::outgoing()->yesterday()->count();
+            $yesterdayDispositionLetter = Disposition::yesterday()->count();
+        } else {
+            $todayIncomingLetter = Letter::incoming()->today()->where('user_id', $userId)->count();
+            $todayOutgoingLetter = Letter::outgoing()->today()->where('user_id', $userId)->count();
+            $todayDispositionLetter = Disposition::today()->where('user_id', $userId)->count();
+
+            $yesterdayIncomingLetter = Letter::incoming()->yesterday()->where('user_id', $userId)->count();
+            $yesterdayOutgoingLetter = Letter::outgoing()->yesterday()->where('user_id', $userId)->count();
+            $yesterdayDispositionLetter = Disposition::yesterday()->where('user_id', $userId)->count();
+        }
+
+        $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter + $todayDispositionLetter;
         $yesterdayLetterTransaction = $yesterdayIncomingLetter + $yesterdayOutgoingLetter + $yesterdayDispositionLetter;
 
         return view('pages.dashboard', [
@@ -53,10 +64,6 @@ class PageController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return View
-     */
     public function profile(Request $request): View
     {
         return view('pages.profile', [
@@ -64,29 +71,22 @@ class PageController extends Controller
         ]);
     }
 
-    /**
-     * @param UpdateUserRequest $request
-     * @return RedirectResponse
-     */
     public function profileUpdate(UpdateUserRequest $request): RedirectResponse
     {
         try {
             $newProfile = $request->validated();
             if ($request->hasFile('profile_picture')) {
-//               DELETE OLD PICTURE
                 $oldPicture = auth()->user()->profile_picture;
                 if (str_contains($oldPicture, '/storage/avatars/')) {
                     $url = parse_url($oldPicture, PHP_URL_PATH);
                     Storage::delete(str_replace('/storage', 'public', $url));
                 }
 
-//                UPLOAD NEW PICTURE
-                $filename = time() .
-                    '-' . $request->file('profile_picture')->getFilename() .
-                    '.' . $request->file('profile_picture')->getClientOriginalExtension();
+                $filename = time() . '-' . uniqid() . '.' . $request->file('profile_picture')->getClientOriginalExtension();
                 $request->file('profile_picture')->storeAs('public/avatars', $filename);
                 $newProfile['profile_picture'] = asset('storage/avatars/' . $filename);
             }
+
             auth()->user()->update($newProfile);
             return back()->with('success', __('menu.general.success'));
         } catch (\Throwable $exception) {
@@ -94,9 +94,6 @@ class PageController extends Controller
         }
     }
 
-    /**
-     * @return RedirectResponse
-     */
     public function deactivate(): RedirectResponse
     {
         try {
@@ -108,10 +105,6 @@ class PageController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return View
-     */
     public function settings(Request $request): View
     {
         return view('pages.setting', [
@@ -119,10 +112,6 @@ class PageController extends Controller
         ]);
     }
 
-    /**
-     * @param UpdateConfigRequest $request
-     * @return RedirectResponse
-     */
     public function settingsUpdate(UpdateConfigRequest $request): RedirectResponse
     {
         try {
@@ -138,10 +127,6 @@ class PageController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function removeAttachment(Request $request): RedirectResponse
     {
         try {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClassificationRequest;
 use App\Http\Requests\UpdateClassificationRequest;
 use App\Models\Classification;
+use App\Models\SubClassification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,9 @@ class ClassificationController extends Controller
      */
     public function index(Request $request): View
     {
+
+        $classifications = Classification::with('subClassifications')->get();
+
         return view('pages.reference.classification', [
             'data' => Classification::render($request->search),
             'search' => $request->search,
@@ -74,4 +78,27 @@ class ClassificationController extends Controller
             return back()->with('error', $exception->getMessage());
         }
     }
+
+    public function storeSub(Request $request): RedirectResponse
+{
+    $request->validate([
+        'classification_id' => 'required|exists:classifications,id',
+        'code' => 'required|string|unique:sub_classifications,code',
+        'description' => 'required|string',
+    ]);
+
+     try {
+       $data = $request->validate([
+    'classification_id' => 'required|exists:classifications,id',
+    'code' => 'required|string|unique:sub_classifications,code',
+    'description' => 'required|string',
+]);
+
+SubClassification::create($data);
+        return back()->with('success', __('menu.general.success'));
+    } catch (\Throwable $exception) {
+        return back()->with('error', $exception->getMessage());
+    }
+}
+
 }

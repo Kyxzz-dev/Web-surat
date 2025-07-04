@@ -72,21 +72,21 @@
         <p>{{ $letter->description }}</p>
         <div class="d-flex justify-content-between flex-column flex-sm-row">
             <small class="text-secondary">{{ $letter->note }}</small>
-            @if(count($letter->attachments))
-                <div>
-                    @foreach($letter->attachments as $attachment)
-                        <a href="{{ $attachment->path_url }}" target="_blank">
-                            @if($attachment->extension == 'pdf')
-                                <i class="bx bxs-file-pdf display-6 cursor-pointer text-primary"></i>
-                            @elseif(in_array($attachment->extension, ['jpg', 'jpeg']))
-                                <i class="bx bxs-file-jpg display-6 cursor-pointer text-primary"></i>
-                            @elseif($attachment->extension == 'png')
-                                <i class="bx bxs-file-png display-6 cursor-pointer text-primary"></i>
-                            @endif
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+           @if(count($letter->attachments))
+    <div>
+        @foreach($letter->attachments as $attachment)
+            <a href="{{ $attachment->path_url }}" target="_blank">
+                @if($attachment->extension == 'pdf')
+                    <i class="bx bxs-file-pdf display-6 cursor-pointer text-primary"></i>
+                @elseif(in_array($attachment->extension, ['jpg', 'jpeg']))
+                    <i class="bx bxs-file-jpg display-6 cursor-pointer text-primary"></i>
+                @elseif($attachment->extension == 'png')
+                    <i class="bx bxs-file-png display-6 cursor-pointer text-primary"></i>
+                @endif
+            </a>
+        @endforeach
+    </div>
+@endif
         </div>
         {{ $slot }}
     </div>

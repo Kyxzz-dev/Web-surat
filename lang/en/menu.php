@@ -56,6 +56,7 @@ return [
     ],
     'auth' => [
         'login' => 'Login',
+        'register' => 'Register',
         'email_placeholder' => 'Enter your email',
     ],
 ];

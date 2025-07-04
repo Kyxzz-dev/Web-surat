@@ -14,7 +14,7 @@
                 <input type="hidden" name="type" value="{{ $data->type }}">
                 <div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <x-input-form :value="$data->reference_number" name="reference_number"
-                                  :label="__('model.letter.reference_number')"/>
+                                  :label="__('model.letter.reference_number')" readonly/>
                 </div>
                 <div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <x-input-form :value="$data->from" name="from" :label="__('model.letter.from')"/>

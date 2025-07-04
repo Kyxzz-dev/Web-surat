@@ -44,26 +44,26 @@
                 </li>
             </ul>
         </li>
-        <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.*') ? 'active open' : '' }}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-book"></i>
-                <div data-i18n="{{ __('menu.agenda.menu') }}">{{ __('menu.agenda.menu') }}</div>
-            </a>
-            <ul class="menu-sub">
-                <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.incoming') ? 'active' : '' }}">
-                    <a href="{{ route('agenda.incoming') }}" class="menu-link">
-                        <div
-                            data-i18n="{{ __('menu.agenda.incoming_letter') }}">{{ __('menu.agenda.incoming_letter') }}</div>
-                    </a>
-                </li>
-                <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.outgoing') ? 'active' : '' }}">
-                    <a href="{{ route('agenda.outgoing') }}" class="menu-link">
-                        <div
-                            data-i18n="{{ __('menu.agenda.outgoing_letter') }}">{{ __('menu.agenda.outgoing_letter') }}</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
+      @if (auth()->check() && auth()->user()->role === 'admin')
+    <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="{{ __('menu.agenda.menu') }}">{{ __('menu.agenda.menu') }}</div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.incoming') ? 'active' : '' }}">
+                <a href="{{ route('agenda.incoming') }}" class="menu-link">
+                    <div data-i18n="{{ __('menu.agenda.incoming_letter') }}">{{ __('menu.agenda.incoming_letter') }}</div>
+                </a>
+            </li>
+            <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.outgoing') ? 'active' : '' }}">
+                <a href="{{ route('agenda.outgoing') }}" class="menu-link">
+                    <div data-i18n="{{ __('menu.agenda.outgoing_letter') }}">{{ __('menu.agenda.outgoing_letter') }}</div>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
 
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('menu.header.other_menu') }}</span>
@@ -88,7 +88,7 @@
                 </li>
             </ul>
         </li>
-        @if(auth()->user()->role == 'admin')
+        @if (auth()->check() && auth()->user()->role === 'admin')
             <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-analyse"></i>

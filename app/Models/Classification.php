@@ -34,4 +34,9 @@ class Classification extends Model
                 'search' => $search,
             ]);
     }
+
+      public function subClassifications()
+    {
+        return $this->hasMany(SubClassification::class);
+    }
 }

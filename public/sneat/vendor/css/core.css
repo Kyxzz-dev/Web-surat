@@ -4051,6 +4051,7 @@ textarea.form-control-lg {
 .accordion-item {
   background-color: #fff;
   border: 0 solid #d9dee3;
+  text-overflow: ellipsis;
 }
 .accordion-item:first-of-type {
   border-top-left-radius: 0.375rem;
