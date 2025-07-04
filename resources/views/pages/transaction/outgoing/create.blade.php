@@ -10,6 +10,15 @@
             @csrf
             <div class="card-body row">
                 <input type="hidden" name="type" value="outgoing">
+                
+                <div class="col-md-6 mb-3">
+                    <x-input-form name="reference_number" id="reference_number" :label="__('model.letter.reference_number')" value="WIM.2" readonly />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nomor Agenda</label>
+                    <input type="text" class="form-control" id="remaining_limit" value="-" readonly>
+                </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="classification_id" class="form-label">Klasifikasi</label>
@@ -27,15 +36,6 @@
                         <option value="">-- Pilih Sub-Klasifikasi --</option>
                     </select>
                 </div>
-                
-                <div class="col-md-6 mb-3">
-                    <x-input-form name="reference_number" id="reference_number" :label="__('model.letter.reference_number')" :value="$reference_number" readonly />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Sisa Nomor Tersedia</label>
-                    <input type="text" class="form-control" id="remaining_limit" value="-" readonly>
-                </div>
 
                 <div class="col-md-6 mb-3">
                     <x-input-form name="letter_date" id="letter_date" :label="__('model.letter.letter_date')" type="date" />
@@ -45,12 +45,12 @@
                     <x-input-form name="received_date" :label="__('model.letter.received_date')" type="date" />
                 </div>
 
-                <!--<div class="col-md-6 mb-3">
-                    <x-input-form name="agenda_number" :label="__('model.letter.agenda_number')" />
-                </div>-->
-
                 <div class="col-md-12 mb-3">
                     <x-input-textarea-form name="description" :label="__('model.letter.description')" />
+                </div>
+
+                <div class="col-sm-12 col-md-12">
+                    <x-input-textarea-form name="note" :label="__('model.letter.note')" />
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -72,7 +72,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const dateInput = document.getElementById('letter_date');
         const referenceField = document.getElementById('reference_number');
@@ -106,5 +106,5 @@
             }
         }
     });
-</script>
+</script> -->
 @endpush

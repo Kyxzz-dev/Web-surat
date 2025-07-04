@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;                     
-use Illuminate\Support\Facades\Mail;      
-use Illuminate\Support\Facades\Session;   
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 class OtpController extends Controller
 {
@@ -34,7 +34,7 @@ class OtpController extends Controller
 
             Session::forget('otp_user_id');
 
-            return redirect()->route('login')->with('success', 'Kamu sudah terdaftar');
+            return redirect()->route('login')->with('success', 'Kode OTP kamu benar. Silakan login.');
         }
 
         return back()->withErrors(['otp' => 'Kode OTP salah atau sudah kedaluwarsa']);

@@ -58,7 +58,7 @@
                         <form method="POST" action="{{ route('otp.verify') }}">
     @csrf
     <div class="mb-3">
-        <x-input-form name="otp" type="text" label="Kode OTP" placeholder="Contoh: 123456" />
+        <x-input-form name="otp" type="text" label="Kode OTP" placeholder="Silahkan Masukkan Kode OTP" />
     </div>
 
     <button type="submit" class="btn btn-primary d-grid w-100">Verifikasi</button>

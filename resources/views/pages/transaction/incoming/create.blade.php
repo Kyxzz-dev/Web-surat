@@ -8,27 +8,9 @@
             @csrf
             <div class="card-body row">
                 <input type="hidden" name="type" value="incoming">
-
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="mb-3">
-                        <label for="classification_code" class="form-label">{{ __('model.letter.classification_code') }}</label>
-                        <select class="form-select @error('classification_code') is-invalid @enderror" id="classification_code" name="classification_code">
-                            <option value="">-- Pilih Kode Klasifikasi --</option>
-                            @foreach($classifications as $classification)
-                                <option value="{{ $classification->code }}" @selected(old('classification_code') == $classification->code)>
-                                    {{ $classification->code }} - {{ $classification->type }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('classification_code')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
                 
-
                 <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="reference_number" :label="__('model.letter.reference_number')" :value="$reference_number" readonly />
+                    <x-input-form name="reference_number" :label="__('model.letter.reference_number')" :value="$reference_number"/>
                 </div>
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
@@ -43,12 +25,16 @@
                     <x-input-textarea-form name="description" :label="__('model.letter.description')" />
                 </div>
 
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="agenda_number" :label="__('model.letter.agenda_number')" />
+                <div class="col-sm-12 col-md-12">
+                    <x-input-textarea-form name="description" :label="__('model.letter.note')" />
                 </div>
 
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <x-input-form name="from" :label="__('model.letter.from')" />
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <x-input-form name="to" :label="__('model.letter.to')" />
                 </div>
 
                 <div class="col-sm-12 col-md-6 col-lg-4">
