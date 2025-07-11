@@ -41,16 +41,18 @@ class StoreLetterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'agenda_number' => ['required'],
+            'agenda_number' => ['required', 'numeric'],
             'from' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
             'to' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())],
             'type' => ['required'],
             'reference_number' => ['required', Rule::unique('letters')],
+            
             'received_date' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
             'letter_date' => ['required'],
             'description' => ['required'],
             'note' => ['nullable'],
-            'classification_code' => ['required'],
+            'classification_id' => ['required', 'exists:classifications,id'],
+            'sub_classification_id' => 'nullable|exists:sub_classifications,id',
         ];
     }
 }

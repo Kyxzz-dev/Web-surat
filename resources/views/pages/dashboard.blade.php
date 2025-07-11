@@ -56,7 +56,7 @@
                     <div class="card-body">
                         <h4 class="card-title text-primary">{{ $greeting }}</h4>
                         <p class="mb-4">{{ $currentDate }}</p>
-                        <p style="font-size: smaller" class="text-muted">*) {{ __('dashboard.today_report') }}</p>
+                        <p style="font-size: smaller" class="text-muted">* {{ __('dashboard.today_report') }}</p>
                     </div>
                 </div>
                 <div class="col-sm-5 text-center text-sm-left">

@@ -30,6 +30,7 @@ class Letter extends Model
         'type',
         'classification_code',
         'user_id',
+        'sub_classification_id'
     ];
 
     /**
@@ -150,4 +151,9 @@ class Letter extends Model
     {
         return $this->hasMany(Attachment::class, 'letter_id', 'id');
     }
+
+    public function subClassification()
+{
+    return $this->belongsTo(SubClassification::class);
+}
 }

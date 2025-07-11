@@ -4,10 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncomingLetterController;
 use App\Http\Controllers\OutgoingLetterController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SlotAllocationController;
 use App\Http\Controllers\ClassificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\PasswordResetLinkController;
 use Illuminate\Http\Request;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +26,23 @@ use Illuminate\Http\Request;
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+// Password Reset Routes
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.store');
 
 Route::get('/otp', [OtpController::class, 'showForm'])->name('otp.form');
 Route::post('/otp', [OtpController::class, 'verify'])->name('otp.verify');
@@ -75,11 +96,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/classification/sub', [ClassificationController::class, 'storeSub'])->name('classification.storeSub');
         Route::resource('classification', \App\Http\Controllers\ClassificationController::class)->except(['show', 'create', 'edit']);
         Route::resource('status', \App\Http\Controllers\LetterStatusController::class)->except(['show', 'create', 'edit']);
+        Route::resource('slot-allocations', \App\Http\Controllers\SlotAllocationController::class)->except(['show']);
     });
 
-    Route::get('/preview/{filename}', [\App\Http\Controllers\FileController::class, 'preview'])->name('file.preview');
     
-    // Route::get('/generate-reference-number', [IncomingLetterController::class, 'getReferenceNumber'])->name('generate.reference.number');
+
+    Route::get('/preview/{filename}', [\App\Http\Controllers\FileController::class, 'preview'])->name('file.preview');
+    Route::get('/get-sub-classifications/{id}', [ClassificationController::class, 'getSubClassifications']);
+    Route::get('/outgoing/next-agenda-number', [OutgoingLetterController::class, 'getNextAgendaNumber']);
+
+    // Route::get('/generate-reference-number', [LetterController::class, 'getReferenceNumber'])->name('generate.reference.number');
     Route::get('/incoming/preview-reference-number', [IncomingLetterController::class, 'previewReferenceNumber'])->name('transaction.incoming.previewReferenceNumber');
     Route::get('/transaction/outgoing/preview-reference-number', [OutgoingLetterController::class, 'previewReferenceNumber'])->name('transaction.outgoing.previewReferenceNumber');
 

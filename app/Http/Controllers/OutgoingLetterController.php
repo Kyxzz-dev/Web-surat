@@ -1,20 +1,22 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Enums\LetterType;
-use App\Http\Requests\StoreLetterRequest;
-use App\Http\Requests\UpdateLetterRequest;
-use App\Models\Attachment;
-use App\Models\Classification;
+use Carbon\Carbon;
 use App\Models\Config;
 use App\Models\Letter;
-use App\Models\LetterNumberPool;
-use Carbon\Carbon;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
+use App\Enums\LetterType;
+use App\Models\Attachment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
+use App\Models\Classification;
+use App\Models\LetterNumberPool;
+use App\Models\SubClassification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\App;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreLetterRequest;
+use App\Models\SlotAllocation;
+use App\Http\Requests\UpdateLetterRequest;
 
 class OutgoingLetterController extends Controller
 {
@@ -64,50 +66,82 @@ class OutgoingLetterController extends Controller
 
     public function create(): View
     {
-        $classifications  = Classification::with('subClassifications')->get();
-        $reference_number = $this->generateReferenceNumber();
-
-        return view('pages.transaction.outgoing.create', compact('classifications', 'reference_number'));
+        $classifications  = Classification::select('id', 'code', 'type')->get();
+        $subClassifications = SubClassification::all();
+        return view('pages.transaction.outgoing.create', compact('classifications', 'subClassifications'));
     }
 
-    public function store(StoreLetterRequest $request): RedirectResponse
-    {
-        try {
-            $user = auth()->user();
-            if ($request->type != LetterType::OUTGOING->type()) {
-                throw new \Exception(__('menu.transaction.outgoing_letter'));
-            }
+   public function store(StoreLetterRequest $request): RedirectResponse
+{
+    try {
+        $user = auth()->user();
 
-            $newLetter                     = $request->validated();
-            $newLetter['user_id']          = $user->id;
-            $newLetter['reference_number'] = $this->getNextLetterNumber($newLetter['letter_date']);
-
-            $letter = Letter::create($newLetter);
-
-            if ($request->hasFile('attachments')) {
-                foreach ($request->attachments as $attachment) {
-                    $extension = $attachment->getClientOriginalExtension();
-                    if (! in_array($extension, ['png', 'jpg', 'jpeg', 'pdf'])) {
-                        continue;
-                    }
-
-                    $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
-                    $attachment->storeAs('public/attachments', $filename);
-
-                    Attachment::create([
-                        'filename'  => $filename,
-                        'extension' => $extension,
-                        'user_id'   => $user->id,
-                        'letter_id' => $letter->id,
-                    ]);
-                }
-            }
-
-            return redirect()->route('transaction.outgoing.index')->with('success', __('menu.general.success'));
-        } catch (\Throwable $exception) {
-            return back()->with('error', $exception->getMessage());
+        if ($request->type != LetterType::OUTGOING->type()) {
+            throw new \Exception(__('menu.transaction.outgoing_letter'));
         }
+
+        $date = $request->input('letter_date');
+
+        // 🔧 Buat slot otomatis jika belum ada
+        $slot = SlotAllocation::where('date', $date)->first();
+        if (! $slot) {
+            $lastSlot = SlotAllocation::orderBy('date', 'desc')->first();
+            $startNumber = $lastSlot ? $lastSlot->end_number + 1 : 1;
+            $slot = SlotAllocation::create([
+                'date'         => $date,
+                'start_number' => $startNumber,
+                'end_number'   => $startNumber + 29,
+            ]);
+        }
+
+        // 🔢 Hitung nomor agenda berdasarkan slot
+        $used = Letter::where('letter_date', $date)
+    ->where('type', LetterType::OUTGOING->type())
+    ->count();
+        $agendaNumber = $slot->start_number + $used;
+
+        if ($agendaNumber > $slot->end_number) {
+            throw new \Exception("Slot surat untuk tanggal $date sudah habis.");
+        }
+
+        $newLetter = $request->validated();
+        $newLetter['user_id'] = $user->id;
+        $newLetter['agenda_number'] = $agendaNumber;
+        $newLetter['letter_date'] = $date;
+
+        $classification = Classification::findOrFail($request->classification_id);
+        $sub = SubClassification::findOrFail($request->sub_classification_id);
+
+        $reference_number = 'WIM.2-' . trim($classification->code) . '-' . $sub->code . '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
+        $newLetter['reference_number'] = $reference_number;
+        $newLetter['classification_code'] = $classification->code;
+
+        $letter = Letter::create($newLetter);
+
+        // Lampiran (opsional)
+        if ($request->hasFile('attachments')) {
+            foreach ($request->attachments as $attachment) {
+                $extension = $attachment->getClientOriginalExtension();
+                if (! in_array($extension, ['png', 'jpg', 'jpeg', 'pdf'])) continue;
+
+                $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
+                $attachment->storeAs('public/attachments', $filename);
+
+                Attachment::create([
+                    'filename' => $filename,
+                    'extension' => $extension,
+                    'user_id' => $user->id,
+                    'letter_id' => $letter->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('transaction.outgoing.index')->with('success', __('menu.general.success'));
+
+    } catch (\Throwable $exception) {
+        return back()->with('error', $exception->getMessage());
     }
+}
 
     public function show(Letter $outgoing): View
     {
@@ -164,86 +198,48 @@ class OutgoingLetterController extends Controller
         }
     }
 
-    public function previewReferenceNumber(Request $request)
+    public function getSubClassifications($classification_id)
     {
-        $letterDate = $request->input('letter_date');
-        if (! $letterDate) {
-            return response()->json([
-                'reference_number' => '',
-                'remaining'        => null,
-                'limit'            => null,
-            ]);
-        }
+        $subClassifications = \App\Models\SubClassification::where('classification_id', $classification_id)->get();
 
-        $referenceNumber = $this->generateReferenceNumber($letterDate);
-        $remaining       = LetterNumberPool::where('date', $letterDate)->where('is_used', false)->count();
-
-        // Tambahkan ini untuk menentukan limit berdasarkan bulan
-        $date  = \Carbon\Carbon::parse($letterDate);
-        $limit = $date->month % 2 === 0 ? 40 : 30;
-
-        return response()->json([
-            'reference_number' => $referenceNumber,
-            'remaining'        => $remaining,
-            'limit'            => $limit,
-        ]);
+        return response()->json($subClassifications);
     }
 
-    private function generateReferenceNumber($date = null): string
-    {
-        $date           = $date ? Carbon::parse($date) : Carbon::today();
-        $limit          = $date->month % 2 === 0 ? 40 : 30;
-        $startDate      = Carbon::create(2024, 6, 1);
-        $daysSinceStart = $startDate->diffInDays($date);
-        $startNumber    = $daysSinceStart * $limit + 1;
+    // 
 
-        if (! LetterNumberPool::whereDate('date', $date)->exists()) {
-            for ($i = 0; $i < $limit; $i++) {
-                LetterNumberPool::create([
-                    'date'    => $date,
-                    'number'  => str_pad($startNumber + $i, 4, '0', STR_PAD_LEFT),
-                    'is_used' => false,
-                ]);
-            }
-        }
+   public function getNextAgendaNumber(Request $request)
+{
+    $date = $request->input('letter_date') ?? now()->toDateString();
 
-        $pool = LetterNumberPool::where('date', $date)->where('is_used', false)->orderBy('number')->first();
+    // Ambil slot terakhir agar bisa menentukan start_number baru
+    $latestSlot = SlotAllocation::orderBy('end_number', 'desc')->first();
+    $lastEndNumber = $latestSlot ? $latestSlot->end_number : 0;
 
-        return $pool ? 'WIM.2-' . $date->format('Ymd') . '/' . $pool->number : 'WIM.2-' . $date->format('Ymd') . '/HABIS';
+    // Buat slot baru jika belum ada untuk tanggal ini
+    $slot = SlotAllocation::firstOrCreate(
+        ['date' => $date],
+        ['start_number' => $lastEndNumber + 1, 'end_number' => $lastEndNumber + 30]
+    );
+
+    // Hitung surat keluar (outgoing) yang sudah digunakan di tanggal ini
+    $usedCount = Letter::whereDate('letter_date', $date)
+        ->where('type', LetterType::OUTGOING->type()) // ✅ hanya surat keluar
+        ->count();
+
+    $nextNumber = $slot->start_number + $usedCount;
+
+    if ($nextNumber > $slot->end_number) {
+        return response()->json(['error' => 'Slot nomor surat sudah habis.'], 400);
     }
 
-    private function getNextLetterNumber($letterDate): string
-    {
-        return DB::transaction(function () use ($letterDate) {
-            $date           = Carbon::parse($letterDate);
-            $limit          = $date->month % 2 === 0 ? 40 : 30;
-            $startDate      = Carbon::create(2024, 6, 1);
-            $daysSinceStart = $startDate->diffInDays($date);
-            $startNumber    = $daysSinceStart * $limit + 1;
+    return response()->json([
+        'next_number' => str_pad($nextNumber, 3, '0', STR_PAD_LEFT),
+        'slot_start'  => $slot->start_number,
+        'slot_end'    => $slot->end_number,
+        'used'        => $usedCount
+    ]);
+}
 
-            if (! LetterNumberPool::where('date', $date)->exists()) {
-                for ($i = 0; $i < $limit; $i++) {
-                    LetterNumberPool::create([
-                        'date'    => $date,
-                        'number'  => str_pad($startNumber + $i, 4, '0', STR_PAD_LEFT),
-                        'is_used' => false,
-                    ]);
-                }
-            }
 
-            $poolNumber = LetterNumberPool::where('date', $date)
-                ->where('is_used', false)
-                ->orderBy('number')
-                ->lockForUpdate()
-                ->first();
 
-            if (! $poolNumber) {
-                throw new \Exception('Nomor surat untuk tanggal ini telah habis.');
-            }
-
-            $poolNumber->update(['is_used' => true]);
-
-            return 'WIM.2-' . $date->format('Ymd') . '/' . $poolNumber->number;
-        });
-    }
 }

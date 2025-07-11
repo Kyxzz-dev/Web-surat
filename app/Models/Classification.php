@@ -28,11 +28,12 @@ class Classification extends Model
     public function scopeRender($query, $search)
     {
         return $query
-            ->search($search)
-            ->paginate(Config::getValueByCode(ConfigEnum::PAGE_SIZE))
-            ->appends([
-                'search' => $search,
-            ]);
+        ->with('subClassifications') 
+        ->search($search)
+        ->paginate(Config::getValueByCode(ConfigEnum::PAGE_SIZE))
+        ->appends([
+            'search' => $search,
+        ]);
     }
 
       public function subClassifications()

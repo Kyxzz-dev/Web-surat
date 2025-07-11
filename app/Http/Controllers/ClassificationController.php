@@ -20,15 +20,19 @@ class ClassificationController extends Controller
      * @return View
      */
     public function index(Request $request): View
-    {
+{
+    $search = $request->search;
 
-        $classifications = Classification::with('subClassifications')->get();
+    $data = Classification::with('subClassifications')
+        ->search($search)
+        ->paginate(10)
+        ->appends(['search' => $search]);
 
-        return view('pages.reference.classification', [
-            'data' => Classification::render($request->search),
-            'search' => $request->search,
-        ]);
-    }
+    return view('pages.reference.classification', [
+        'data' => $data,
+        'search' => $search,
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.
@@ -79,26 +83,28 @@ class ClassificationController extends Controller
         }
     }
 
-    public function storeSub(Request $request): RedirectResponse
+  public function storeSub(Request $request): RedirectResponse
 {
-    $request->validate([
-        'classification_id' => 'required|exists:classifications,id',
-        'code' => 'required|string|unique:sub_classifications,code',
-        'description' => 'required|string',
-    ]);
+    try {
+        $data = $request->validate([
+            'classification_id' => 'required|exists:classifications,id',
+            'code' => 'required|string|unique:sub_classifications,code',
+            'description' => 'required|string',
+        ]);
 
-     try {
-       $data = $request->validate([
-    'classification_id' => 'required|exists:classifications,id',
-    'code' => 'required|string|unique:sub_classifications,code',
-    'description' => 'required|string',
-]);
+        SubClassification::create($data);
 
-SubClassification::create($data);
         return back()->with('success', __('menu.general.success'));
     } catch (\Throwable $exception) {
         return back()->with('error', $exception->getMessage());
     }
+}
+
+public function getSubClassifications($classification_id)
+{
+    $subClassifications = \App\Models\SubClassification::where('classification_id', $classification_id)->get();
+
+    return response()->json($subClassifications);
 }
 
 }

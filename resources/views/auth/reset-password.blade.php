@@ -1,17 +1,5 @@
 <!DOCTYPE html>
 
-<!-- =========================================================
-* Sneat - Bootstrap 5 HTML Admin Template - Pro | v1.0.0
-==============================================================
-
-* Product Page: https://themeselection.com/products/sneat-bootstrap-html-admin-template/
-* Created by: ThemeSelection
-* License: You must have a valid license purchased in order to legally use the theme for your project.
-* Copyright ThemeSelection (https://themeselection.com)
-
-=========================================================
- -->
-<!-- beautify ignore:start -->
 <html
     lang="en"
     class="light-style customizer-hide"
@@ -27,7 +15,7 @@
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>{{ __('menu.auth.login') }} | {{ config('app.name') }}</title>
+    <title>Reset Password | {{ config('app.name') }}</title>
 
     <meta name="description" content=""/>
 
@@ -61,7 +49,7 @@
 <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">
-            <!-- Register -->
+            <!-- Reset Password Card -->
             <div class="card">
                 <div class="card-body">
                     <!-- Logo -->
@@ -71,46 +59,57 @@
                         </a>
                     </div>
 
-                    <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
+                    <h4 class="mb-2 text-center">Reset Password 🔒</h4>
+                    <p class="mb-4 text-center">Masukkan password baru Anda</p>
+
+                    <form id="formAuthentication" class="mb-3" action="{{ route('password.store') }}" method="POST">
                         @csrf
+                        
+                        <!-- Password Reset Token -->
+                        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
                         <div class="mb-3">
                             <x-input-form
                                 name="email"
                                 type="email"
                                 :label="__('model.user.email')"
+                                :value="old('email', $request->email)"
+                                readonly
                             />
                         </div>
+
                         <div class="mb-3">
                             <x-input-form
                                 name="password"
                                 type="password"
-                                :label="__('model.user.password')"
+                                label="Password Baru"
+                                placeholder="Masukkan password baru"
                             />
                         </div>
+
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember-me" name="remember">
-                                <label class="form-check-label" for="remember-me">
-                                    Ingat saya
-                                </label>
-                            </div>
+                            <x-input-form
+                                name="password_confirmation"
+                                type="password"
+                                label="Konfirmasi Password"
+                                placeholder="Konfirmasi password baru"
+                            />
                         </div>
-                        <div class="mt-2">
-                            <button class="btn btn-primary d-grid w-100" type="submit">{{ __('menu.auth.login') }}</button>
-                        </div>
-                        <p class="text-center mt-3">
-                            <a href="{{ route('password.request') }}">
-                                <small>Lupa password ?</small>
-                            </a>
-                        </p>
-                        <p class="text-center mt-3">
-                            Belum punya akun?
-                                <a href="{{ route('register') }}">{{ __('menu.auth.register') }}</a>
-                        </p>
+
+                        <button class="btn btn-primary d-grid w-100" type="submit">
+                            Reset Password
+                        </button>
                     </form>
+
+                    <div class="text-center">
+                        <a href="{{ route('login') }}" class="d-flex align-items-center justify-content-center">
+                            <i class="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
+                            Kembali ke login
+                        </a>
+                    </div>
                 </div>
             </div>
-            <!-- /Register -->
+            <!-- /Reset Password Card -->
         </div>
     </div>
 </div>

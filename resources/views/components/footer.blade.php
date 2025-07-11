@@ -5,7 +5,7 @@
             <script>
                 document.write(new Date().getFullYear());
             </script>
-            <a target="_blank" class="footer-link fw-bolder">Imigrasi Sumatera Utara</a>
+            <a target="_blank" class="footer-link fw-bolder">Sistem Informasi NOmor suRAT</a>
         </div>
     </div>
 </footer>

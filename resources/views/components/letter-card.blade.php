@@ -2,11 +2,24 @@
     <div class="card-header pb-0">
         <div class="d-flex justify-content-between flex-column flex-sm-row">
             <div class="card-title">
-                <h5 class="text-nowrap mb-0 fw-bold">{{ $letter->reference_number }}</h5>
+                @php
+                $parts = explode('-', $letter->reference_number);
+                $formattedReference = $letter->reference_number;
+
+                if (count($parts) === 4) {
+                // Misal: ['WIM.2', 'PR 01', '01.01', '001']
+                $classification = preg_replace('/\s+/', '', $parts[1]); // Hilangkan spasi
+                $classification = substr($classification, 0, 2); // Ambil 2 huruf awal
+
+                $formattedReference = $parts[0] . '-' . $classification . '-' . $parts[2] . '-' . $parts[3];
+                }
+                @endphp
+
+                <h5 class="text-nowrap mb-0 fw-bold">{{ $formattedReference }}</h5>
                 <small class="text-black">
                     {{ $letter->type == 'incoming' ? $letter->from : $letter->to }} |
-                    <span
-                        class="text-secondary">{{ __('model.letter.agenda_number') }}:</span> {{ $letter->agenda_number }}
+                    <span class="text-secondary">{{ __('model.letter.agenda_number') }}:</span>
+                    {{ $letter->agenda_number }}
                     |
                     {{ $letter->classification?->type }}
                 </small>
@@ -17,51 +30,51 @@
                     {{ $letter->formatted_letter_date }}
                 </div>
                 @if($letter->type == 'incoming')
-                    <div class="mx-3">
-                        <a href="{{ route('transaction.disposition.index', $letter) }}"
-                           class="btn btn-primary btn">{{ __('model.letter.dispose') }} <span>({{ $letter->dispositions->count() }})</span></a>
-                    </div>
+                <div class="mx-3">
+                    <a href="{{ route('transaction.disposition.index', $letter) }}"
+                        class="btn btn-primary btn">{{ __('model.letter.dispose') }}
+                        <span>({{ $letter->dispositions->count() }})</span></a>
+                </div>
                 @endif
                 <div class="dropdown d-inline-block">
                     <button class="btn p-0" type="button" id="dropdown-{{ $letter->type }}-{{ $letter->id }}"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="bx bx-dots-vertical-rounded"></i>
                     </button>
                     @if($letter->type == 'incoming')
-                        <div class="dropdown-menu dropdown-menu-end"
-                             aria-labelledby="dropdown-{{ $letter->type }}-{{ $letter->id }}">
-                            @if(!\Illuminate\Support\Facades\Route::is('*.show'))
-                                <a class="dropdown-item"
-                                   href="{{ route('transaction.incoming.show', $letter) }}">{{ __('menu.general.view') }}</a>
+                    <div class="dropdown-menu dropdown-menu-end"
+                        aria-labelledby="dropdown-{{ $letter->type }}-{{ $letter->id }}">
+                        @if(!\Illuminate\Support\Facades\Route::is('*.show'))
+                        <a class="dropdown-item"
+                            href="{{ route('transaction.incoming.show', $letter) }}">{{ __('menu.general.view') }}</a>
+                        @endif
+                        <a class="dropdown-item"
+                            href="{{ route('transaction.incoming.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
+                        <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
+                            method="post">
+                            @csrf
+                            @method('DELETE')
+                            @if (auth()->check() && auth()->user()->role === 'admin')
+                            <span class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
                             @endif
-                            <a class="dropdown-item"
-                               href="{{ route('transaction.incoming.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
-                            <form action="{{ route('transaction.incoming.destroy', $letter) }}" class="d-inline"
-                                  method="post">
-                                @csrf
-                                @method('DELETE')
-                                <span
-                                    class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
-                            </form>
-                        </div>
+                        </form>
+                    </div>
                     @else
-                        <div class="dropdown-menu dropdown-menu-end"
-                             aria-labelledby="dropdown-{{ $letter->type }}-{{ $letter->id }}">
-                            @if(!\Illuminate\Support\Facades\Route::is('*.show'))
-                                <a class="dropdown-item"
-                                   href="{{ route('transaction.outgoing.show', $letter) }}">{{ __('menu.general.view') }}</a>
-                            @endif
-                            <a class="dropdown-item"
-                               href="{{ route('transaction.outgoing.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
-                            <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
-                                  method="post">
-                                @csrf
-                                @method('DELETE')
-                                <span
-                                    class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
-                            </form>
-                        </div>
+                    <div class="dropdown-menu dropdown-menu-end"
+                        aria-labelledby="dropdown-{{ $letter->type }}-{{ $letter->id }}">
+                        @if(!\Illuminate\Support\Facades\Route::is('*.show'))
+                        <a class="dropdown-item"
+                            href="{{ route('transaction.outgoing.show', $letter) }}">{{ __('menu.general.view') }}</a>
+                        @endif
+                        <a class="dropdown-item"
+                            href="{{ route('transaction.outgoing.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
+                        <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
+                            method="post">
+                            @csrf
+                            @method('DELETE')
+                            <span class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
+                        </form>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -72,21 +85,21 @@
         <p>{{ $letter->description }}</p>
         <div class="d-flex justify-content-between flex-column flex-sm-row">
             <small class="text-secondary">{{ $letter->note }}</small>
-           @if(count($letter->attachments))
-    <div>
-        @foreach($letter->attachments as $attachment)
-            <a href="{{ $attachment->path_url }}" target="_blank">
-                @if($attachment->extension == 'pdf')
+            @if(count($letter->attachments))
+            <div>
+                @foreach($letter->attachments as $attachment)
+                <a href="{{ $attachment->path_url }}" target="_blank">
+                    @if($attachment->extension == 'pdf')
                     <i class="bx bxs-file-pdf display-6 cursor-pointer text-primary"></i>
-                @elseif(in_array($attachment->extension, ['jpg', 'jpeg']))
+                    @elseif(in_array($attachment->extension, ['jpg', 'jpeg']))
                     <i class="bx bxs-file-jpg display-6 cursor-pointer text-primary"></i>
-                @elseif($attachment->extension == 'png')
+                    @elseif($attachment->extension == 'png')
                     <i class="bx bxs-file-png display-6 cursor-pointer text-primary"></i>
-                @endif
-            </a>
-        @endforeach
-    </div>
-@endif
+                    @endif
+                </a>
+                @endforeach
+            </div>
+            @endif
         </div>
         {{ $slot }}
     </div>

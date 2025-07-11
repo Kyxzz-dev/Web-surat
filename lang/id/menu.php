@@ -28,6 +28,7 @@ return [
         'menu' => 'Referensi',
         'classification' => 'Klasifikasi Surat',
         'status' => 'Status Surat',
+        'slot_allocation' => 'Slot Surat',
     ],
     'header' => [
         'main_menu' => 'Menu Utama',
