@@ -12,6 +12,8 @@ return [
         'note' => 'Note',
         'dispose' => 'Dispose',
         'attachment' => 'Attachment',
+        'letter_nature' => 'Letter Nature',
+        'letter_code' => 'Letter Code',
         'status' => [
             'all' => 'All',
             'disposed' => 'Disposed',

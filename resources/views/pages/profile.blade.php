@@ -57,7 +57,7 @@
                     <div class="card-body">
                         <div class="d-flex align-items-start align-items-sm-center gap-4">
                             <img src="{{ $data->profile_picture }}" alt="user-avatar"
-                                 class="d-block rounded" height="100" width="100" id="uploadedAvatar">
+                                 class="d-block rounded-circle object-fit-cover" height="100" width="100" id="uploadedAvatar">
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                     <span class="d-none d-sm-block">{{ __('menu.general.upload') }}</span>

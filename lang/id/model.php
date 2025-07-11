@@ -12,6 +12,8 @@ return [
         'note' => 'Keterangan',
         'dispose' => 'Disposisi Surat',
         'attachment' => 'Lampiran',
+        'letter_nature' => 'Sifat Surat',
+        'letter_code' => 'Kode Surat',
         'status' => [
             'all' => 'Semua',
             'disposed' => 'Ada Disposisi',

@@ -21,17 +21,17 @@
                 </div>
                 <div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <x-input-form :value="$data->agenda_number" name="agenda_number"
-                                  :label="__('model.letter.agenda_number')"/>
+                                  :label="__('model.letter.agenda_number')" readonly/>
                 </div>
                 <div class="col-sm-12 col-12 col-md-6 col-lg-12">
                     <x-input-form :value="date('Y-m-d', strtotime($data->letter_date))" name="letter_date" :label="__('model.letter.letter_date')"
-                                  type="date"/>
+                                  type="date" readonly/>
                 </div>
                 <div class="col-sm-12 col-12 col-md-12 col-lg-12">
                     <x-input-textarea-form :value="$data->description" name="description"
                                            :label="__('model.letter.description')"/>
                 </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-4">
+                <!--<div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <div class="mb-3">
                         <label for="classification_code"
                                class="form-label">{{ __('model.letter.classification_code') }}</label>
@@ -45,6 +45,7 @@
                         </select>
                     </div>
                 </div>
+                -->
                 <div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <x-input-form :value="$data->note ?? ''" name="note" :label="__('model.letter.note')"/>
                 </div>

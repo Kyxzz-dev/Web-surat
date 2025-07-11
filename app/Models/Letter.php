@@ -24,13 +24,15 @@ class Letter extends Model
         'from',
         'to',
         'letter_date',
+        'letter_code',
+        'letter_nature',
         'received_date',
         'description',
         'note',
         'type',
         'classification_code',
         'user_id',
-        'sub_classification_id'
+        'sub_classification_id',
     ];
 
     /**

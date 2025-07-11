@@ -10,7 +10,7 @@ return [
         'disposition_letter' => 'Disposition Letter',
     ],
     'agenda' => [
-        'menu' => 'Agenda',
+        'menu' => 'Report',
         'incoming_letter' => 'Incoming Letter',
         'outgoing_letter' => 'Outgoing Letter',
         'disposition_letter' => 'Disposition Letter',

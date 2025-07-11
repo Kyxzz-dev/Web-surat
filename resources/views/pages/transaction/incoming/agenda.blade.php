@@ -55,7 +55,7 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>{{ __('model.letter.agenda_number') }}</th>
+                    <th>{{ __('model.letter.letter_nature') }}</th>
                     <th>{{ __('model.letter.reference_number') }}</th>
                     <th>{{ __('model.letter.from') }}</th>
                     <th>{{ __('model.letter.letter_date') }}</th>
@@ -66,7 +66,7 @@
                     @foreach($data as $agenda)
                         <tr>
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i>
-                                <strong>{{ $agenda->agenda_number }}</strong></td>
+                                <strong>{{ $agenda->letter_nature }}</strong></td>
                             <td>
                                 <a href="{{ route('transaction.incoming.show', $agenda) }}">{{ $agenda->reference_number }}</a>
                             </td>
@@ -86,7 +86,7 @@
                 @endif
                 <tfoot class="table-border-bottom-0">
                 <tr>
-                    <th>{{ __('model.letter.agenda_number') }}</th>
+                    <th>{{ __('model.letter.letter_nature') }}</th>
                     <th>{{ __('model.letter.reference_number') }}</th>
                     <th>{{ __('model.letter.from') }}</th>
                     <th>{{ __('model.letter.letter_date') }}</th>

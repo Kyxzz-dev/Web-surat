@@ -48,21 +48,49 @@ class OutgoingLetterController extends Controller
     }
 
     public function print(Request $request): View
-    {
-        $agenda = __('menu.agenda.menu');
-        $letter = __('menu.agenda.outgoing_letter');
-        $title  = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
+{
+    $agenda = __('menu.agenda.menu');
+    $letter = __('menu.agenda.outgoing_letter');
+    $title  = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
 
-        return view('pages.transaction.outgoing.print', [
-            'data'   => Letter::outgoing()->agenda($request->since, $request->until, $request->filter)->get(),
-            'search' => $request->search,
-            'since'  => $request->since,
-            'until'  => $request->until,
-            'filter' => $request->filter,
-            'config' => Config::pluck('value', 'code')->toArray(),
-            'title'  => $title,
-        ]);
+    $letters = Letter::outgoing()
+        ->agenda($request->since, $request->until, $request->filter)
+        ->orderBy('letter_date')
+        ->get()
+        ->groupBy(function ($item) {
+            return $item->letter_date->format('Y-m-d'); // Kelompokkan berdasarkan tanggal surat
+        });
+
+    $filledData = [];
+
+    foreach ($letters as $date => $items) {
+        $filledGroup = [];
+
+        // Tambahkan data yang sudah ada
+        foreach ($items as $letter) {
+            $filledGroup[] = $letter;
+        }
+
+        // Hitung kekurangannya
+        $missing = 30 - count($filledGroup);
+        for ($i = 0; $i < $missing; $i++) {
+            $filledGroup[] = null; // Tambahkan baris kosong
+        }
+
+        $filledData[$date] = $filledGroup;
     }
+
+    return view('pages.transaction.outgoing.print', [
+        'data'   => $filledData,
+        'search' => $request->search,
+        'since'  => $request->since,
+        'until'  => $request->until,
+        'filter' => $request->filter,
+        'config' => Config::pluck('value', 'code')->toArray(),
+        'title'  => $title,
+    ]);
+}
+
 
     public function create(): View
     {

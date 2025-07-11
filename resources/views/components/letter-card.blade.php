@@ -18,10 +18,11 @@
                 <h5 class="text-nowrap mb-0 fw-bold">{{ $formattedReference }}</h5>
                 <small class="text-black">
                     {{ $letter->type == 'incoming' ? $letter->from : $letter->to }} |
-                    <span class="text-secondary">{{ __('model.letter.agenda_number') }}:</span>
-                    {{ $letter->agenda_number }}
+                    <span class="text-secondary">Sifat Surat :</span>
+                    {{ $letter->letter_nature}}
                     |
-                    {{ $letter->classification?->type }}
+                    <span class="text-secondary">Nomor Urut :</span>
+                    {{ $letter->letter_code}}
                 </small>
             </div>
             <div class="card-title d-flex flex-row">

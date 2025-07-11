@@ -30,6 +30,8 @@ class StoreLetterRequest extends FormRequest
             'description' => __('model.letter.description'),
             'note' => __('model.letter.note'),
             'classification_code' => __('model.letter.classification_code'),
+            'letter_nature' => __('model.letter.letter_nature'),
+            'letter_code' => __('model.letter_code'),
         ];
     }
 
@@ -41,18 +43,21 @@ class StoreLetterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'agenda_number' => ['required', 'numeric'],
-            'from' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
-            'to' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())],
             'type' => ['required'],
             'reference_number' => ['required', Rule::unique('letters')],
-            
-            'received_date' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
+            'from' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
+            'to' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())],
             'letter_date' => ['required'],
+            'letter_code' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
+            'letter_nature' => ['required', Rule::in(['Penting', 'Sangat Penting', 'Rahasia', 'Sangat Rahasia'])],
             'description' => ['required'],
             'note' => ['nullable'],
-            'classification_id' => ['required', 'exists:classifications,id'],
-            'sub_classification_id' => 'nullable|exists:sub_classifications,id',
+            
+            // Surat keluar saja
+            'classification_id' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type()), 'exists:classifications,id'],
+            'sub_classification_id' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type()), 'exists:sub_classifications,id'],
+            'received_date' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())], // jika memang nanti tetap dibutuhkan
+            'agenda_number' => ['nullable'], // abaikan validasi
         ];
     }
 }

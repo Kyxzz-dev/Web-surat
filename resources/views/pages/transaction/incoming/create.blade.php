@@ -9,13 +9,14 @@
             <div class="card-body row">
                 <input type="hidden" name="type" value="incoming">
 
-                {{-- Kode Surat --}}
+                {{-- Nomor Surat --}}
                 <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="reference_number" :label="__('model.letter.reference_number')" :value="$reference_number" placeholder=""/>
+                    <x-input-form name="reference_number" :label="__('model.letter.reference_number')" placeholder=""/>
                 </div>
 
+                {{-- Kode Surat --}}
                 <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="agenda_number" :label="__('model.letter.agenda_number')" />
+                    <x-input-form name="letter_code" :label="__('model.letter.letter_code')" :value="$letter_code" placeholder=""/>
                 </div>
 
                 {{-- Tanggal Surat --}}
@@ -37,15 +38,9 @@
                     </div>
                 </div>
 
-
                 {{-- Asal Surat (Pengirim) --}}
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <x-input-form name="from" :label="__('model.letter.from')" placeholder="Asal Surat" />
-                </div>
-
-                {{-- Penerima --}}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="to" :label="__('model.letter.to')" />
                 </div>
 
 
@@ -79,3 +74,4 @@
         </form>
     </div>
 @endsection
+

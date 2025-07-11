@@ -93,6 +93,14 @@
                 </tfoot>
             </table>
         </div>
+        {{-- Note di bawah tabel --}}
+        <div class="mt-3 px-4 pb-3">
+            <div class="alert alert-info mb-0" role="alert" style="font-size: 0.9rem;">
+                <strong>Catatan:</strong> <br>
+                <span class="ms-2">* Jika ingin menonaktifkan akun, klik tombol <strong>Edit</strong> pada akun yang dimaksud, lalu hilangkan centang pada opsi "<strong>Masih aktif?</strong>".</span>
+            </div>
+        </div>
+    </div>
     </div>
 
     {!! $data->appends(['search' => $search])->links() !!}
