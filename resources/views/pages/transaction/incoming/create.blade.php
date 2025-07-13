@@ -16,7 +16,7 @@
 
                 {{-- Kode Surat --}}
                 <div class="col-sm-12 col-md-6 col-lg-4">
-                    <x-input-form name="letter_code" :label="__('model.letter.letter_code')" :value="$letter_code" placeholder=""/>
+                    <x-input-form name="letter_code" :label="__('model.letter.letter_code')" :value="$letter_code" placeholder="" readonly/>
                 </div>
 
                 {{-- Tanggal Surat --}}
@@ -30,8 +30,9 @@
                         <label for="letter_nature" class="form-label">Sifat Surat</label>
                         <select class="form-select" id="letter_nature" name="letter_nature" required>
                             <option value="" disabled selected>Pilih sifat surat</option>
-                            <option value="Penting">Penting</option>
-                            <option value="Sangat Penting">Sangat Penting</option>
+                            <option value="Segera">Segera</option>
+                            <option value="Sangat Segera">Sangat Segera</option>
+                            <option value="Biasa">Biasa</option>
                             <option value="Rahasia">Rahasia</option>
                             <option value="Sangat Rahasia">Sangat Rahasia</option>
                         </select>

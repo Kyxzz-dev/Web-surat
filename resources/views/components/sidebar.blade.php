@@ -39,6 +39,7 @@
                 <div data-i18n="{{ __('menu.transaction.menu') }}">{{ __('menu.transaction.menu') }}</div>
             </a>
             <ul class="menu-sub">
+                  @if (auth()->check() && auth()->user()->role === 'admin')
                 <li
                     class="menu-item {{ \Illuminate\Support\Facades\Route::is('transaction.incoming.*') || \Illuminate\Support\Facades\Route::is('transaction.disposition.*') ? 'active' : '' }}">
                     <a href="{{ route('transaction.incoming.index') }}" class="menu-link">
@@ -46,6 +47,7 @@
                             {{ __('menu.transaction.incoming_letter') }}</div>
                     </a>
                 </li>
+                @endif
                 <li
                     class="menu-item {{ \Illuminate\Support\Facades\Route::is('transaction.outgoing.*') ? 'active' : '' }}">
                     <a href="{{ route('transaction.outgoing.index') }}" class="menu-link">
@@ -53,6 +55,9 @@
                             {{ __('menu.transaction.outgoing_letter') }}</div>
                     </a>
                 </li>
+                
+
+
             </ul>
         </li>
         @if (auth()->check() && auth()->user()->role === 'admin')
@@ -74,6 +79,9 @@
                         </div>
                     </a>
                 </li>
+                
+
+
             </ul>
         </li>
         @endif
@@ -87,12 +95,14 @@
                 <div data-i18n="{{ __('menu.gallery.menu') }}">{{ __('menu.gallery.menu') }}</div>
             </a>
             <ul class="menu-sub">
+                    @if (auth()->check() && auth()->user()->role === 'admin')
                 <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('gallery.incoming') ? 'active' : '' }}">
                     <a href="{{ route('gallery.incoming') }}" class="menu-link">
                         <div data-i18n="{{ __('menu.gallery.incoming_letter') }}">
                             {{ __('menu.gallery.incoming_letter') }}</div>
                     </a>
                 </li>
+                @endif
                 <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('gallery.outgoing') ? 'active' : '' }}">
                     <a href="{{ route('gallery.outgoing') }}" class="menu-link">
                         <div data-i18n="{{ __('menu.gallery.outgoing_letter') }}">
@@ -115,11 +125,11 @@
                             {{ __('menu.reference.classification') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.status.*') ? 'active' : '' }}">
+                <!-- <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.status.*') ? 'active' : '' }}">
                     <a href="{{ route('reference.status.index') }}" class="menu-link">
                         <div data-i18n="{{ __('menu.reference.status') }}">{{ __('menu.reference.status') }}</div>
                     </a>
-                </li>
+                </li> -->
                 <li
                     class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.slot-allocations.*') ? 'active' : '' }}">
                     <a href="{{ route('reference.slot-allocations.index') }}" class="menu-link">

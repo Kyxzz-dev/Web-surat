@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreLetterRequest;
 use App\Models\SlotAllocation;
 use App\Http\Requests\UpdateLetterRequest;
+use Illuminate\Support\Facades\Cache;
 
 class OutgoingLetterController extends Controller
 {
@@ -92,12 +93,14 @@ class OutgoingLetterController extends Controller
 }
 
 
-    public function create(): View
-    {
-        $classifications  = Classification::select('id', 'code', 'type')->get();
-        $subClassifications = SubClassification::all();
-        return view('pages.transaction.outgoing.create', compact('classifications', 'subClassifications'));
-    }
+   public function create(): View
+{
+    $classifications = Cache::remember('form_classifications', 86400, function () {
+        return Classification::select('id', 'code', 'type')->get();
+    });
+
+    return view('pages.transaction.outgoing.create', compact('classifications'));
+}
 
    public function store(StoreLetterRequest $request): RedirectResponse
 {
@@ -138,9 +141,17 @@ class OutgoingLetterController extends Controller
         $newLetter['letter_date'] = $date;
 
         $classification = Classification::findOrFail($request->classification_id);
-        $sub = SubClassification::findOrFail($request->sub_classification_id);
+        $sub = $request->sub_classification_id
+    ? SubClassification::findOrFail($request->sub_classification_id)
+    : null;
 
-        $reference_number = 'WIM.2-' . trim($classification->code) . '-' . $sub->code . '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
+$reference_number = 'WIM.2-' . trim($classification->code);
+
+if ($sub) {
+    $reference_number .= '-' . $sub->code;
+}
+
+$reference_number .= '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
         $newLetter['reference_number'] = $reference_number;
         $newLetter['classification_code'] = $classification->code;
 
@@ -226,12 +237,16 @@ class OutgoingLetterController extends Controller
         }
     }
 
-    public function getSubClassifications($classification_id)
-    {
-        $subClassifications = \App\Models\SubClassification::where('classification_id', $classification_id)->get();
+   public function getSubClassifications($classification_id)
+{
+    $cacheKey = 'sub_classifications_of_' . $classification_id;
 
-        return response()->json($subClassifications);
-    }
+    $subClassifications = Cache::remember($cacheKey, 86400, function () use ($classification_id) {
+        return SubClassification::where('classification_id', $classification_id)->get();
+    });
+
+    return response()->json($subClassifications);
+}
 
     // 
 

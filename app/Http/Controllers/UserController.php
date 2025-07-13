@@ -22,12 +22,65 @@ class UserController extends Controller
      * @return View
      */
     public function index(Request $request): View
-    {
-        return view('pages.user', [
-            'data' => User::render($request->search),
-            'search' => $request->search,
+{
+    $query = User::query();
+
+    // Search
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhere('email', 'like', '%' . $request->search . '%')
+              ->orWhere('phone', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    // Filter tanggal
+    if ($request->filled('since') && $request->filled('until') && $request->filled('filter')) {
+        $field = $request->filter;
+        $query->whereBetween($field, [
+            date('Y-m-d 00:00:00', strtotime($request->since)),
+            date('Y-m-d 23:59:59', strtotime($request->until)),
         ]);
     }
+
+    // Ambil data
+    $data = $query->latest()->paginate(10);
+
+    // Kirim ke view
+    return view('pages.user', [
+        'data' => $data,
+        'search' => $request->search,
+        'since' => $request->since,
+        'until' => $request->until,
+        'filter' => $request->filter,
+        'query' => http_build_query([
+            'search' => $request->search,
+            'since' => $request->since,
+            'until' => $request->until,
+            'filter' => $request->filter,
+        ]),
+    ]);
+}
+
+
+public function print()
+{
+    $data = \App\Models\User::all();
+    $title = 'Laporan Data Pengguna';
+
+    // Jika kamu pakai $config di layout cetakmu
+    $config = [
+        'institution_name' => 'Nama Instansi',
+        'institution_address' => 'Alamat Instansi',
+    ];
+
+    return view('user.print', compact('data', 'title', 'config'));
+}
+
+
+
+
+
 
     /**
      * Store a newly created resource in storage.

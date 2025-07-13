@@ -19,91 +19,96 @@
 @endpush
 
 @section('content')
-    <x-breadcrumb
-        :values="[__('menu.users')]">
-        <button
-            type="button"
-            class="btn btn-primary btn-create"
-            data-bs-toggle="modal"
-            data-bs-target="#createModal">
+<x-breadcrumb :values="[__('menu.users')]">
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary btn-create" data-bs-toggle="modal" data-bs-target="#createModal">
             {{ __('menu.general.create') }}
         </button>
-    </x-breadcrumb>
+        <a href="{{ route('user.print') }}" target="_blank" class="btn btn-warning">Cetak</a>
+    </div>
+</x-breadcrumb>
+
 
     <div class="card mb-5">
-        <div class="table-responsive text-nowrap">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>{{ __('model.user.name') }}</th>
-                    <th>{{ __('model.user.email') }}</th>
-                    <th>{{ __('model.user.phone') }}</th>
-                    <th>{{ __('model.user.is_active') }}</th>
-                    <th>{{ __('menu.general.action') }}</th>
-                </tr>
-                </thead>
-                @if($data)
-                    <tbody>
-                    @foreach($data as $user)
-                        <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->phone }}</td>
-                            <td><span
-                                    class="badge bg-label-primary me-1">{{  __('model.user.' . ($user->is_active ? 'active' : 'nonactive')) }}</span>
-                            </td>
-                            <td>
-                                <button class="btn btn-info btn-sm btn-edit"
-                                        data-id="{{ $user->id }}"
-                                        data-name="{{ $user->name }}"
-                                        data-email="{{ $user->email }}"
-                                        data-phone="{{ $user->phone }}"
-                                        data-active="{{ $user->is_active }}"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editModal">
-                                    {{ __('menu.general.edit') }}
-                                </button>
-                                <form action="{{ route('user.destroy', $user) }}" class="d-inline" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm btn-delete"
-                                            type="button">{{ __('menu.general.delete') }}</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                @else
-                    <tbody>
-                    <tr>
-                        <td colspan="4" class="text-center">
-                            {{ __('menu.general.empty') }}
-                        </td>
-                    </tr>
-                    </tbody>
-                @endif
-                <tfoot class="table-border-bottom-0">
-                <tr>
-                    <th>{{ __('model.user.name') }}</th>
-                    <th>{{ __('model.user.email') }}</th>
-                    <th>{{ __('model.user.phone') }}</th>
-                    <th>{{ __('model.user.is_active') }}</th>
-                    <th>{{ __('menu.general.action') }}</th>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-        {{-- Note di bawah tabel --}}
-        <div class="mt-3 px-4 pb-3">
-            <div class="alert alert-info mb-0" role="alert" style="font-size: 0.9rem;">
-                <strong>Catatan:</strong> <br>
-                <span class="ms-2">* Jika ingin menonaktifkan akun, klik tombol <strong>Edit</strong> pada akun yang dimaksud, lalu hilangkan centang pada opsi "<strong>Masih aktif?</strong>".</span>
-            </div>
-        </div>
-    </div>
+    <!-- Header laporan -->
+    <div class="card-header text-center" style="background-color: white; border-bottom: none;">
+        <h4 class="mb-0" style="color: #f58b00;">Laporan Data Pengguna</h4>
+        <small class="text-muted">Per {{ \Carbon\Carbon::now()->format('d-m-Y') }}</small>
     </div>
 
+    <div class="table-responsive text-nowrap">
+        <table class="table table-striped" style="background-color: white;">
+            <thead>
+            <tr style="color: #f58b00;">
+                <th style="text-align: center;">No</th>
+                <th>{{ __('model.user.name') }}</th>
+                <th>{{ __('model.user.email') }}</th>
+                <th>{{ __('model.user.phone') }}</th>
+                <th>{{ __('model.user.is_active') }}</th>
+                <th>{{ __('menu.general.action') }}</th>
+            </tr>
+            </thead>
+            @if($data)
+                <tbody>
+                @foreach($data as $index => $user)
+                    <tr>
+                        <td style="text-align: center;">{{ $loop->iteration }}</td>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->phone }}</td>
+                        <td>
+                            <span class="badge bg-label-{{ $user->is_active ? 'success' : 'danger' }}">
+                                {{ __('model.user.' . ($user->is_active ? 'active' : 'nonactive')) }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm btn-edit"
+                                    data-id="{{ $user->id }}"
+                                    data-name="{{ $user->name }}"
+                                    data-email="{{ $user->email }}"
+                                    data-phone="{{ $user->phone }}"
+                                    data-active="{{ $user->is_active }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editModal">
+                                {{ __('menu.general.edit') }}
+                            </button>
+                            <form action="{{ route('user.destroy', $user) }}" class="d-inline" method="post">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger btn-sm btn-delete" type="button">
+                                    {{ __('menu.general.delete') }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            @else
+                <tbody>
+                <tr>
+                    <td colspan="6" class="text-center">
+                        {{ __('menu.general.empty') }}
+                    </td>
+                </tr>
+                </tbody>
+            @endif
+        </table>
+    </div>
+
+    <!-- Catatan bawah tabel -->
+<div class="mt-3 px-4 pb-3">
+    <div class="mb-0" role="alert" style="background-color: #fff4e5; border-left: 4px solid #f58b00; padding: 10px 15px; border-radius: 4px; font-size: 0.9rem; color: #663c00;">
+        <strong>Catatan:</strong> <br>
+        <span class="ms-2">* Jika ingin menonaktifkan akun, klik tombol <strong>Edit</strong> pada akun yang dimaksud, lalu hilangkan centang pada opsi "<strong>Masih aktif?</strong>".</span>
+    </div>
+</div>
+
+</div>
+
+
     {!! $data->appends(['search' => $search])->links() !!}
+
+
 
     <!-- Create Modal -->
     <div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1">

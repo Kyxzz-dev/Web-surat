@@ -8,13 +8,13 @@ use Illuminate\View\Component;
 
 class InputForm extends Component
 {
-    public string $name, $label, $type, $value;
+    public string $name, $label, $type;
+    public ?string $value;
+
     /**
      * Create a new component instance.
-     *
-     * @return void
      */
-    public function __construct(string $name, $label, $type = 'text', $value = '')
+    public function __construct(string $name, $label, $type = 'text', ?string $value = '')
     {
         $this->name = $name;
         $this->label = $label;
@@ -24,8 +24,6 @@ class InputForm extends Component
 
     /**
      * Get the view / contents that represent the component.
-     *
-     * @return View|Closure|string
      */
     public function render(): View|string|Closure
     {

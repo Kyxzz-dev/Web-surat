@@ -55,10 +55,9 @@
                             method="post">
                             @csrf
                             @method('DELETE')
-                            @if (auth()->check() && auth()->user()->role === 'admin')
                             <span class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
-                            @endif
                         </form>
+                   
                     </div>
                     @else
                     <div class="dropdown-menu dropdown-menu-end"
@@ -69,12 +68,15 @@
                         @endif
                         <a class="dropdown-item"
                             href="{{ route('transaction.outgoing.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
-                        <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
+                            @if (auth()->check() && auth()->user()->role === 'admin')
+                        
+                            <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
                             method="post">
                             @csrf
                             @method('DELETE')
                             <span class="dropdown-item cursor-pointer btn-delete">{{ __('menu.general.delete') }}</span>
                         </form>
+                        @endif
                     </div>
                     @endif
                 </div>

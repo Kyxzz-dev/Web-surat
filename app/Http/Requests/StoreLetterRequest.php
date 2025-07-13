@@ -49,13 +49,14 @@ class StoreLetterRequest extends FormRequest
             'to' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())],
             'letter_date' => ['required'],
             'letter_code' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
-            'letter_nature' => ['required', Rule::in(['Penting', 'Sangat Penting', 'Rahasia', 'Sangat Rahasia'])],
+            'letter_nature' => ['required', Rule::in(['Segera', 'Sangat Segera', 'Biasa', 'Rahasia', 'Sangat Rahasia'])],
             'description' => ['required'],
             'note' => ['nullable'],
             
             // Surat keluar saja
             'classification_id' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type()), 'exists:classifications,id'],
-            'sub_classification_id' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type()), 'exists:sub_classifications,id'],
+            // 'sub_classification_id' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type()), 'exists:sub_classifications,id'],
+            'sub_classification_id' => ['nullable', 'exists:sub_classifications,id'],
             'received_date' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())], // jika memang nanti tetap dibutuhkan
             'agenda_number' => ['nullable'], // abaikan validasi
         ];

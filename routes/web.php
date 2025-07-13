@@ -55,6 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('user', \App\Http\Controllers\UserController::class)
         ->except(['show', 'edit', 'create'])
         ->middleware(['role:admin']);   
+    
+    Route::get('user/print', [\App\Http\Controllers\UserController::class, 'print'])
+        ->name('user.print')
+        ->middleware(['role:admin']);
+    
 
     Route::get('profile', [\App\Http\Controllers\PageController::class, 'profile'])
         ->name('profile.show');
@@ -85,6 +90,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('incoming/print', [\App\Http\Controllers\IncomingLetterController::class, 'print'])->name('incoming.print');
     Route::get('outgoing', [\App\Http\Controllers\OutgoingLetterController::class, 'agenda'])->name('outgoing');
     Route::get('outgoing/print', [\App\Http\Controllers\OutgoingLetterController::class, 'print'])->name('outgoing.print');
+    //Route::get('/agenda/user', [UserController::class, 'agenda'])->name('agenda.user');
+//Route::get('/agenda/user/print', [UserController::class, 'printAgenda'])->name('agenda.user.print');
+//Route::get('/agenda/user/print', [UserController::class, 'print'])->name('agenda.user.print');
+
 });
 
     Route::prefix('gallery')->as('gallery.')->group(function () {

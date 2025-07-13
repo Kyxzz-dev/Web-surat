@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+// use Illuminate\Support\Facades\Cache;
 
 class StoreIncomingLetterJob implements ShouldQueue
 {
@@ -44,6 +45,7 @@ class StoreIncomingLetterJob implements ShouldQueue
                 ]);
             }
         });
+        // Cache::forget('incoming_letters');
 
         Log::info('✅ Job StoreIncomingLetter SELESAI', ['user_id' => $this->userId]);
     }
