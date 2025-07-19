@@ -83,9 +83,14 @@ class ClassificationController extends Controller
      * @param Classification $classification
      * @return RedirectResponse
      */
-    public function destroy(Classification $classification): RedirectResponse
+   public function destroy(Classification $classification): RedirectResponse
 {
     try {
+        // ❗ Validasi: cek apakah klasifikasi memiliki sub-klasifikasi
+        if ($classification->subClassifications()->exists()) {
+            return back()->with('error', 'Tidak dapat menghapus klasifikasi yang memiliki sub-klasifikasi.');
+        }
+
         $classification->delete();
 
         // ❌ Bersihkan cache klasifikasi form

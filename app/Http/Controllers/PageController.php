@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class PageController extends Controller
 {
@@ -74,24 +75,46 @@ class PageController extends Controller
     public function profileUpdate(UpdateUserRequest $request): RedirectResponse
     {
         try {
-            $newProfile = $request->validated();
-            if ($request->hasFile('profile_picture')) {
-                $oldPicture = auth()->user()->profile_picture;
-                if (str_contains($oldPicture, '/storage/avatars/')) {
-                    $url = parse_url($oldPicture, PHP_URL_PATH);
-                    Storage::delete(str_replace('/storage', 'public', $url));
-                }
-
-                $filename = time() . '-' . uniqid() . '.' . $request->file('profile_picture')->getClientOriginalExtension();
-                $request->file('profile_picture')->storeAs('public/avatars', $filename);
-                $newProfile['profile_picture'] = asset('storage/avatars/' . $filename);
+        $newProfile = $request->validated();
+        
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $oldPicture = auth()->user()->profile_picture;
+            if (str_contains($oldPicture, '/storage/avatars/')) {
+                $url = parse_url($oldPicture, PHP_URL_PATH);
+                Storage::delete(str_replace('/storage', 'public', $url));
             }
 
-            auth()->user()->update($newProfile);
-            return back()->with('success', __('menu.general.success'));
-        } catch (\Throwable $exception) {
-            return back()->with('error', $exception->getMessage());
+            $filename = time() . '-' . uniqid() . '.' . $request->file('profile_picture')->getClientOriginalExtension();
+            $request->file('profile_picture')->storeAs('public/avatars', $filename);
+            $newProfile['profile_picture'] = asset('storage/avatars/' . $filename);
         }
+
+        // Handle password update
+        if ($request->filled('new_password')) {
+            $newProfile['password'] = Hash::make($request->new_password);
+            
+            // Log untuk debugging (hapus setelah testing)
+            \Log::info('Password sedang diupdate untuk user: ' . auth()->user()->id);
+        }
+
+        // Remove fields yang tidak perlu disimpan ke database
+        unset($newProfile['new_password']);
+        unset($newProfile['new_password_confirmation']);
+
+        // Update user
+        auth()->user()->update($newProfile);
+        
+        // Log untuk debugging (hapus setelah testing)
+        \Log::info('Profile updated successfully for user: ' . auth()->user()->id);
+        
+        return back()->with('success', __('menu.general.success'));
+    } catch (\Throwable $exception) {
+        // Log error untuk debugging
+        \Log::error('Error updating profile: ' . $exception->getMessage());
+        
+        return back()->with('error', $exception->getMessage());
+    }
     }
 
     public function deactivate(): RedirectResponse

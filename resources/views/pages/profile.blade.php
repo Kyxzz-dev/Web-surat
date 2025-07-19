@@ -84,9 +84,49 @@
                             <div class="col-md-6">
                                 <x-input-form name="email" :label="__('model.user.email')" :value="$data->email" />
                             </div>
+                            @if(auth()->user()->role == 'staff')
+                                <div class="col-md-6">
+                                    <x-input-form name="nip" :label="'nip'" :value="$data->nip" />
+                                </div>
+                            @endif
                             <div class="col-md-6">
                                 <x-input-form name="phone" :label="__('model.user.phone')" :value="$data->phone ?? ''" />
                             </div>
+                          {{-- Form password yang diperbaiki --}}
+<div class="col-md-6">
+    <label for="new_password" class="form-label">Ganti Password</label>
+    <input
+        type="password"
+        name="new_password"
+        id="new_password"
+        class="form-control @error('new_password') is-invalid @enderror"
+        placeholder="Kosongkan jika tidak ingin mengganti password"
+        readonly
+        ondblclick="enablePasswordEdit()"
+    >
+    @error('new_password')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+    <small class="form-text text-muted">Klik dua kali untuk mengubah password. Minimal 8 karakter.</small>
+</div>
+
+{{-- Konfirmasi password --}}
+<div class="col-md-6">
+    <label for="new_password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+    <input
+        type="password"
+        name="new_password_confirmation"
+        id="new_password_confirmation"
+        class="form-control @error('new_password_confirmation') is-invalid @enderror"
+        placeholder="Ulangi password baru"
+        readonly
+        ondblclick="enablePasswordEdit()"
+    >
+    @error('new_password_confirmation')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+    <small class="form-text text-muted">Klik dua kali untuk mengaktifkan konfirmasi password</small>
+</div>  
                         </div>
                         <div class="mt-2">
                             <button type="submit" class="btn btn-primary me-2">{{ __('menu.general.update') }}</button>
@@ -121,3 +161,136 @@
         </div>
     </div>
 @endsection
+@push('script')
+<script>
+    let passwordEditEnabled = false;
+
+    function enablePasswordEdit() {
+        if (!passwordEditEnabled) {
+            // Enable both password fields
+            const passwordField = document.getElementById('new_password');
+            const confirmField = document.getElementById('new_password_confirmation');
+            
+            if (passwordField && confirmField) {
+                passwordField.removeAttribute('readonly');
+                confirmField.removeAttribute('readonly');
+                
+                // Focus on the first password field
+                passwordField.focus();
+                
+                // Change placeholder text to indicate fields are now active
+                passwordField.placeholder = "Masukkan password baru";
+                confirmField.placeholder = "Konfirmasi password baru";
+                
+                // Add visual indicator that fields are now editable
+                passwordField.classList.add('border-primary');
+                confirmField.classList.add('border-primary');
+                
+                passwordEditEnabled = true;
+                
+                // Add event listeners for validation
+                addPasswordValidation();
+            }
+        }
+    }
+
+    function addPasswordValidation() {
+        const passwordField = document.getElementById('new_password');
+        const confirmField = document.getElementById('new_password_confirmation');
+        
+        // Real-time validation for password strength
+        passwordField.addEventListener('input', function() {
+            if (this.value.length > 0 && this.value.length < 8) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (this.value.length >= 8) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-invalid', 'is-valid');
+            }
+            
+            // Check confirmation match when password changes
+            validatePasswordMatch();
+        });
+        
+        // Real-time validation for password confirmation
+        confirmField.addEventListener('input', function() {
+            validatePasswordMatch();
+        });
+        
+        // Reset fields if both are empty
+        passwordField.addEventListener('blur', function() {
+            if (this.value === '' && confirmField.value === '') {
+                resetPasswordFields();
+            }
+        });
+        
+        confirmField.addEventListener('blur', function() {
+            if (this.value === '' && passwordField.value === '') {
+                resetPasswordFields();
+            }
+        });
+    }
+
+    function validatePasswordMatch() {
+        const passwordField = document.getElementById('new_password');
+        const confirmField = document.getElementById('new_password_confirmation');
+        
+        if (confirmField.value !== '' && passwordField.value !== confirmField.value) {
+            confirmField.classList.add('is-invalid');
+            confirmField.classList.remove('is-valid');
+        } else if (confirmField.value !== '' && passwordField.value === confirmField.value) {
+            confirmField.classList.remove('is-invalid');
+            confirmField.classList.add('is-valid');
+        } else {
+            confirmField.classList.remove('is-invalid', 'is-valid');
+        }
+    }
+
+    function resetPasswordFields() {
+        const passwordField = document.getElementById('new_password');
+        const confirmField = document.getElementById('new_password_confirmation');
+        
+        if (passwordField.value === '' && confirmField.value === '') {
+            passwordField.setAttribute('readonly', true);
+            confirmField.setAttribute('readonly', true);
+            
+            passwordField.placeholder = "Kosongkan jika tidak ingin mengganti password";
+            confirmField.placeholder = "Ulangi password baru";
+            
+            passwordField.classList.remove('border-primary', 'is-valid', 'is-invalid');
+            confirmField.classList.remove('border-primary', 'is-valid', 'is-invalid');
+            
+            passwordEditEnabled = false;
+        }
+    }
+
+    // Form submission validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const passwordField = document.getElementById('new_password');
+                const confirmField = document.getElementById('new_password_confirmation');
+                
+                // If password is filled but confirmation is empty
+                if (passwordField.value !== '' && confirmField.value === '') {
+                    e.preventDefault();
+                    confirmField.classList.add('is-invalid');
+                    confirmField.focus();
+                    return false;
+                }
+                
+                // If passwords don't match
+                if (passwordField.value !== '' && passwordField.value !== confirmField.value) {
+                    e.preventDefault();
+                    confirmField.classList.add('is-invalid');
+                    confirmField.focus();
+                    return false;
+                }
+            });
+        }
+    });
+</script>
+@endpush

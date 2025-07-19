@@ -151,29 +151,28 @@ if ($sub) {
     $reference_number .= '-' . $sub->code;
 }
 
-$reference_number .= '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
+        $reference_number .= '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
         $newLetter['reference_number'] = $reference_number;
         $newLetter['classification_code'] = $classification->code;
 
         $letter = Letter::create($newLetter);
 
-        // Lampiran (opsional)
-        if ($request->hasFile('attachments')) {
-            foreach ($request->attachments as $attachment) {
-                $extension = $attachment->getClientOriginalExtension();
-                if (! in_array($extension, ['png', 'jpg', 'jpeg', 'pdf'])) continue;
+        // if ($request->hasFile('attachments')) {
+        //     foreach ($request->attachments as $attachment) {
+        //         $extension = $attachment->getClientOriginalExtension();
+        //         if (! in_array($extension, ['png', 'jpg', 'jpeg', 'pdf'])) continue;
 
-                $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
-                $attachment->storeAs('public/attachments', $filename);
+        //         $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
+        //         $attachment->storeAs('public/attachments', $filename);
 
-                Attachment::create([
-                    'filename' => $filename,
-                    'extension' => $extension,
-                    'user_id' => $user->id,
-                    'letter_id' => $letter->id,
-                ]);
-            }
-        }
+        //         Attachment::create([
+        //             'filename' => $filename,
+        //             'extension' => $extension,
+        //             'user_id' => $user->id,
+        //             'letter_id' => $letter->id,
+        //         ]);
+        //     }
+        // }
 
         return redirect()->route('transaction.outgoing.index')->with('success', __('menu.general.success'));
 
@@ -191,41 +190,44 @@ $reference_number .= '-' . str_pad($agendaNumber, 3, '0', STR_PAD_LEFT);
 
     public function edit(Letter $outgoing): View
     {
+        $subClassifications= SubClassification::all();
+        $classifications = Classification::all();
         return view('pages.transaction.outgoing.edit', [
             'data'            => $outgoing,
-            'classifications' => Classification::all(),
+        'classifications' => $classifications,
+        'subClassifications' => $subClassifications,
         ]);
     }
 
-    public function update(UpdateLetterRequest $request, Letter $outgoing): RedirectResponse
-    {
-        try {
-            $outgoing->update($request->validated());
+   public function update(UpdateLetterRequest $request, Letter $outgoing): RedirectResponse
+{
+    try {
+        $outgoing->update($request->validated());
 
-            if ($request->hasFile('attachments')) {
-                foreach ($request->attachments as $attachment) {
-                    $extension = $attachment->getClientOriginalExtension();
-                    if (! in_array($extension, ['png', 'jpg', 'jpeg', 'pdf'])) {
-                        continue;
-                    }
-
-                    $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
-                    $attachment->storeAs('public/attachments', $filename);
-
-                    Attachment::create([
-                        'filename'  => $filename,
-                        'extension' => $extension,
-                        'user_id'   => auth()->id(),
-                        'letter_id' => $outgoing->id,
-                    ]);
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $attachment) {
+                $extension = $attachment->getClientOriginalExtension();
+                if (!in_array(strtolower($extension), ['png', 'jpg', 'jpeg', 'pdf'])) {
+                    continue;
                 }
-            }
 
-            return back()->with('success', __('menu.general.success'));
-        } catch (\Throwable $exception) {
-            return back()->with('error', $exception->getMessage());
+                $filename = time() . '-' . str_replace(' ', '-', $attachment->getClientOriginalName());
+                $path = $attachment->storeAs('public/attachments', $filename);
+
+                Attachment::create([
+                    'filename'  => $filename,
+                    'extension' => $extension,
+                    'user_id'   => auth()->id(),
+                    'letter_id' => $outgoing->id,
+                ]);
+            }
         }
+
+           return redirect()->route('transaction.outgoing.index')->with('success', __('menu.general.success'));
+    } catch (\Throwable $exception) {
+        return back()->with('error', $exception->getMessage());
     }
+}
 
     public function destroy(Letter $outgoing): RedirectResponse
     {

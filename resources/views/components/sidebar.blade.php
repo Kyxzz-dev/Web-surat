@@ -85,7 +85,7 @@
             </ul>
         </li>
         @endif
-
+        @if (auth()->check() && auth()->user()->role === 'admin')
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('menu.header.other_menu') }}</span>
         </li>
@@ -103,14 +103,15 @@
                     </a>
                 </li>
                 @endif
-                <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('gallery.outgoing') ? 'active' : '' }}">
+                <!-- <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('gallery.outgoing') ? 'active' : '' }}">
                     <a href="{{ route('gallery.outgoing') }}" class="menu-link">
                         <div data-i18n="{{ __('menu.gallery.outgoing_letter') }}">
                             {{ __('menu.gallery.outgoing_letter') }}</div>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </li>
+        @endif
         @if (auth()->check() && auth()->user()->role === 'admin')
         <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">

@@ -29,7 +29,9 @@ class UpdateLetterRequest extends FormRequest
             'letter_date' => __('model.letter.letter_date'),
             'description' => __('model.letter.description'),
             'note' => __('model.letter.note'),
+            'letter_nature' => __('model.letter.letter_nature'),
             'classification_code' => __('model.letter.classification_code'),
+            'letter_code' => __('model.letter_code'),
         ];
     }
 
@@ -39,17 +41,34 @@ class UpdateLetterRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules(): array
-    {
-        return [
-            'agenda_number' => ['required'],
-            'from' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
-            'to' => [Rule::requiredIf($this->type == LetterType::OUTGOING->type())],
-            'reference_number' => ['required', Rule::unique('letters', 'reference_number')->ignore($this->id)],
-            'received_date' => [Rule::requiredIf($this->type == LetterType::INCOMING->type())],
-            'letter_date' => ['required'],
-            'description' => ['required'],
-            'note' => ['nullable'],
-            'classification_code' => ['required'],
-        ];
+{
+    $letter = $this->route('incoming') ?? $this->route('outgoing');
+
+    $common = [
+        'reference_number' => ['required', Rule::unique('letters')->ignore($letter?->id)],
+        'letter_date' => ['required'],
+        'letter_nature' => ['required', Rule::in(['Segera', 'Sangat Segera', 'Biasa', 'Rahasia', 'Sangat Rahasia'])],
+        'description' => ['required'],
+        'note' => ['nullable'],
+    ];
+
+    if ($this->type === LetterType::INCOMING->type()) {
+        return array_merge($common, [
+            'from' => ['required'],
+            'letter_code' => ['required'],
+        ]);
     }
+
+    if ($this->type === LetterType::OUTGOING->type()) {
+        return array_merge($common, [
+            'to' => ['required'],
+            'agenda_number' => ['nullable'],
+            'classification_id' => ['nullable', 'exists:classifications,id'],
+            'sub_classification_id' => ['nullable', 'exists:sub_classifications,id'],
+            'received_date' => ['nullable'],
+        ]);
+    }
+
+    return $common;
+}
 }

@@ -45,12 +45,30 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
                         <div class="mb-3">
                             <x-input-form name="name" type="text" :label="__('Nama Lengkap')" />
                         </div>
 
                         <div class="mb-3">
                             <x-input-form name="email" type="email" :label="__('Email')" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <x-input-form
+                                name="nip"
+                                type="text"
+                                :label="'NIP'"
+                            />
                         </div>
 
                         <div class="mb-3">

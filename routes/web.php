@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
 
 
@@ -59,7 +60,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('user/print', [\App\Http\Controllers\UserController::class, 'print'])
         ->name('user.print')
         ->middleware(['role:admin']);
-    
 
     Route::get('profile', [\App\Http\Controllers\PageController::class, 'profile'])
         ->name('profile.show');
@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('gallery')->as('gallery.')->group(function () {
         Route::get('incoming', [\App\Http\Controllers\LetterGalleryController::class, 'incoming'])->name('incoming');
         Route::get('outgoing', [\App\Http\Controllers\LetterGalleryController::class, 'outgoing'])->name('outgoing');
-    });
+    })->middleware(['role:admin']);
 
     Route::prefix('reference')->as('reference.')->middleware(['role:admin'])->group(function () {
         Route::post('/classification/sub', [ClassificationController::class, 'storeSub'])->name('classification.storeSub');

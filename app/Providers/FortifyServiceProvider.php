@@ -8,6 +8,7 @@ use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -40,17 +41,27 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::authenticateUsing(function (Request $request) {
-            $user = User::where('email', $request->email)
-                ->where('is_active', true)
-                ->first();
+    $login = $request->email; // input login bisa email atau NIP
 
-            if ($user && Hash::check($request->password, $user?->password)) {
-                return $user;
-            }
+    $user = User::where(function ($query) use ($login) {
+            $query->where('email', $login)
+                  ->orWhere('nip', $login); // ← pastikan kolom `nip` ada di tabel users
+        })
+        ->where('is_active', true)
+        ->first();
 
-            return false;
-        });
+    if (! $user) {
+        session()->flash('error', Lang::get('auth.failed'));
+        return null;
+    }
 
+    if (! Hash::check($request->password, $user->password)) {
+        session()->flash('error', Lang::get('auth.password'));
+        return null;
+    }
+
+    return $user;
+});
         RateLimiter::for('login', function (Request $request) {
             $email = (string) $request->email;
 

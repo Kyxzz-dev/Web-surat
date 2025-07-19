@@ -6,6 +6,15 @@
     </x-breadcrumb>
 
     <div class="card mb-4">
+        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         <form action="{{ route('transaction.incoming.update', $data) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -16,44 +25,42 @@
                     <x-input-form :value="$data->reference_number" name="reference_number"
                                   :label="__('model.letter.reference_number')" readonly/>
                 </div>
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <x-input-form name="letter_code" :label="__('model.letter.letter_code')" :value="$letter_code" placeholder="" readonly/>
+                </div>
                 <div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <x-input-form :value="$data->from" name="from" :label="__('model.letter.from')"/>
                 </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-4">
-                    <x-input-form :value="$data->agenda_number" name="agenda_number"
-                                  :label="__('model.letter.agenda_number')"/>
+                {{-- Sifat Surat --}}
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="mb-3">
+                        <label for="letter_nature" class="form-label">Sifat Surat</label>
+                        <select class="form-select" id="letter_nature" name="letter_nature" required>
+                            <option value="" disabled selected>Pilih sifat surat</option>
+                            <option value="Segera" {{ $data->letter_nature === 'Segera' ? 'selected' : '' }}>Segera</option>
+<option value="Sangat Segera" {{ $data->letter_nature === 'Sangat Segera' ? 'selected' : '' }}>Sangat Segera</option>
+<option value="Biasa" {{ $data->letter_nature === 'Biasa' ? 'selected' : '' }}>Biasa</option>
+<option value="Rahasia" {{ $data->letter_nature === 'Rahasia' ? 'selected' : '' }}>Rahasia</option>
+<option value="Sangat Rahasia" {{ $data->letter_nature === 'Sangat Rahasia' ? 'selected' : '' }}>Sangat Rahasia</option>
+
+                        </select>
+                    </div>
                 </div>
                 <div class="col-sm-12 col-12 col-md-6 col-lg-6">
                     <x-input-form :value="date('Y-m-d', strtotime($data->letter_date))" name="letter_date"
                                   :label="__('model.letter.letter_date')"
                                   type="date"/>
                 </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-6">
-                    <x-input-form :value="date('Y-m-d', strtotime($data->received_date))" name="received_date"
-                                  :label="__('model.letter.received_date')" type="date"/>
-                </div>
+                
                 <div class="col-sm-12 col-12 col-md-12 col-lg-12">
                     <x-input-textarea-form :value="$data->description" name="description"
                                            :label="__('model.letter.description')"/>
                 </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-4">
-                    <div class="mb-3">
-                        <label for="classification_code"
-                               class="form-label">{{ __('model.letter.classification_code') }}</label>
-                        <select class="form-select" id="classification_code" name="classification_code">
-                            @foreach($classifications as $classification)
-                                <option
-                                    @selected(old('classification_code', $data->classification_code) == $classification->code)
-                                    value="{{ $classification->code }}"
-                                >{{ $classification->type }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                
+                <div class="col-sm-12 col-12 col-md-12 col-lg-12">
+                    <x-input-textarea-form :value="$data->note ?? ''" name="note" :label="__('model.letter.note')"/>
                 </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-4">
-                    <x-input-form :value="$data->note ?? ''" name="note" :label="__('model.letter.note')"/>
-                </div>
-                <div class="col-sm-12 col-12 col-md-6 col-lg-4">
+                <!-- Attachment --><div class="col-sm-12 col-12 col-md-6 col-lg-4">
                     <div class="mb-3">
                         <label for="attachments" class="form-label">{{ __('model.letter.attachment') }}</label>
                         <input type="file" class="form-control @error('attachments') is-invalid @enderror"

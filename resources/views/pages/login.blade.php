@@ -71,13 +71,19 @@
                         </a>
                     </div>
 
+                    @if(session('error'))
+                        <div class="alert alert-danger mb-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <x-input-form
                                 name="email"
-                                type="email"
-                                :label="__('model.user.email')"
+                                type="text"
+                                :label="__('model.user.login')"
                             />
                         </div>
                         <div class="mb-3">

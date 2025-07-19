@@ -40,6 +40,7 @@ return [
     'user' => [
         'name' => 'Nama',
         'email' => 'Surel',
+        'nip'   => 'NIP',
         'password' => 'Kata Sandi',
         'confirm_password' => 'Konfirmasi Kata Sandi',
         'phone' => 'Nomor Telepon',
@@ -51,6 +52,8 @@ return [
         'active' => 'Aktif',
         'nonactive' => 'Nonaktif',
         'reset_password' => 'Setel ulang Kata Sandi menjadi bawaan?',
+        'make_admin' => 'Jadikan user sebagai ADMIN',
+        'login' => 'NIP atau Email',
     ],
     'general' => [
         'created_at' => 'Dibuat pada',

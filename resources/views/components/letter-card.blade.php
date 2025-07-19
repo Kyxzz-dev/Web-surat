@@ -22,7 +22,11 @@
                     {{ $letter->letter_nature}}
                     |
                     <span class="text-secondary">Nomor Urut :</span>
-                    {{ $letter->letter_code}}
+                    @if(request()->is('*incoming*'))
+        {{ $letter->letter_code }}
+    @else
+        {{ $letter->agenda_number }}
+    @endif
                 </small>
             </div>
             <div class="card-title d-flex flex-row">
@@ -31,11 +35,11 @@
                     {{ $letter->formatted_letter_date }}
                 </div>
                 @if($letter->type == 'incoming')
-                <div class="mx-3">
+                <!-- Disposisi <div class="mx-3">
                     <a href="{{ route('transaction.disposition.index', $letter) }}"
                         class="btn btn-primary btn">{{ __('model.letter.dispose') }}
                         <span>({{ $letter->dispositions->count() }})</span></a>
-                </div>
+                </div>-->
                 @endif
                 <div class="dropdown d-inline-block">
                     <button class="btn p-0" type="button" id="dropdown-{{ $letter->type }}-{{ $letter->id }}"

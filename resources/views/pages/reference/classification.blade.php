@@ -52,9 +52,9 @@
                                 <form action="{{ route('reference.classification.destroy', $classification) }}" method="post" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-danger btn-sm btn-delete" type="submit">
-                                        {{ __('menu.general.delete') }}
-                                    </button>
+                                   <button type="submit" class="btn btn-danger btn-sm btn-delete-confirm">
+    {{ __('menu.general.delete') }}
+</button>
                                 </form>
 
                                 <button class="btn btn-warning btn-sm"
@@ -177,3 +177,13 @@
         </div>
     @endforeach
 @endsection
+@push('script')
+<script>
+    $(document).on('submit', 'form:has(.btn-delete-confirm)', function (e) {
+        const confirmed = confirm('Apakah Anda yakin ingin menghapus klasifikasi ini?');
+        if (!confirmed) {
+            e.preventDefault();
+        }
+    });
+</script>
+@endpush

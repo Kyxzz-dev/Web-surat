@@ -107,19 +107,28 @@ public function print()
      * @param User $user
      * @return RedirectResponse
      */
-    public function update(UpdateUserRequest $request, User $user): RedirectResponse
-    {
-        try {
-            $newUser = $request->validated();
-            $newUser['is_active'] = isset($newUser['is_active']);
-            if ($request->reset_password)
-                $newUser['password'] = Hash::make(Config::getValueByCode(ConfigEnum::DEFAULT_PASSWORD));
-            $user->update($newUser);
-            return back()->with('success', __('menu.general.success'));
-        } catch (\Throwable $exception) {
-            return back()->with('error', $exception->getMessage());
+   public function update(UpdateUserRequest $request, User $user): RedirectResponse
+{
+    try {
+        $newUser = $request->validated();
+        $newUser['is_active'] = isset($newUser['is_active']);
+
+        // Ganti password manual jika user isi field 'new_password'
+        if ($request->filled('new_password')) {
+            $newUser['password'] = Hash::make($request->input('new_password'));
         }
+
+        // Kalau ada checkbox reset_password, ganti dengan password default
+        if ($request->reset_password) {
+            $newUser['password'] = Hash::make(Config::getValueByCode(ConfigEnum::DEFAULT_PASSWORD));
+        }
+
+        $user->update($newUser);
+        return back()->with('success', __('menu.general.success'));
+    } catch (\Throwable $exception) {
+        return back()->with('error', $exception->getMessage());
     }
+}
 
     /**
      * Remove the specified resource from storage.
@@ -128,13 +137,19 @@ public function print()
      * @return RedirectResponse
      * @throws \Exception
      */
-    public function destroy(User $user): RedirectResponse
-    {
-        try {
-            $user->delete();
-            return back()->with('success', __('menu.general.success'));
-        } catch (\Throwable $exception) {
-            return back()->with('error', $exception->getMessage());
-        }
+   public function destroy(User $user): RedirectResponse
+{
+    // Cek apakah user masih dipakai di surat
+    if ($user->letters()->exists()) {
+        return back()->with('error', 'Pengguna tidak dapat dihapus karena masih terhubung dengan data surat.');
     }
+
+    try {
+        $user->delete();
+        return back()->with('success', __('menu.general.success'));
+    } catch (\Throwable $exception) {
+        return back()->with('error', $exception->getMessage());
+    }
+}
+
 }

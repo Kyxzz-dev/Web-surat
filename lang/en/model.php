@@ -40,6 +40,7 @@ return [
     'user' => [
         'name' => 'Name',
         'email' => 'Email',
+        'nip'   => 'NIP',
         'password' => 'Password',
         'confirm_password' => 'Confirm Kata Sandi',
         'phone' => 'Phone',
@@ -51,6 +52,7 @@ return [
         'active' => 'Active',
         'nonactive' => 'Nonactive',
         'reset_password' => 'Reset Password to Default?',
+        'login' => 'NIP or Email',
     ],
     'general' => [
         'created_at' => 'Created At',

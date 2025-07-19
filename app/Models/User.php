@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'email_verified_at',
+        'nip',
         'password',
         'phone',
         'role',
@@ -101,4 +102,8 @@ class User extends Authenticatable
                 'search' => $search,
             ]);
     }
+    public function letters()
+{
+    return $this->hasMany(Letter::class);
+}
 }

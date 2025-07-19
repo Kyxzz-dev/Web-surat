@@ -126,6 +126,7 @@
     <tr>
         <th>No</th>
         <th>Nama</th>
+        <th>NIP</th>
         <th>Email</th>
         <th>No HP</th>
         <th>Status</th>
@@ -136,6 +137,7 @@
         <tr>
             <td>{{ $i + 1 }}</td>
             <td>{{ $user->name }}</td>
+            <td>{{ $user->nip }}</td>
             <td>{{ $user->email }}</td>
             <td>{{ $user->phone }}</td>
             <td>{{ $user->is_active ? 'Aktif' : 'Nonaktif' }}</td>

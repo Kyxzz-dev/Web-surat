@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Jobs\StoreIncomingLetterJob;
 use App\Enums\LetterType;
 use App\Http\Requests\StoreLetterRequest;
 use App\Http\Requests\UpdateLetterRequest;
@@ -118,60 +116,76 @@ class IncomingLetterController extends Controller
      */
     
      public function store(StoreLetterRequest $request): RedirectResponse
-     {
-         try {
-             $user = auth()->user();
-     
-             if ($request->type !== 'incoming') {
-                 throw new \Exception(__('menu.transaction.incoming_letter') . ' - Invalid letter type');
-             }
-     
-             // Validasi duplikat nomor surat
-             $exists = Letter::where('reference_number', $request->reference_number)
-                 ->where('type', 'incoming')
-                 ->exists();
-     
-             if ($exists) {
-                 throw new \Exception('Reference number already exists. Please try again.');
-             }
-     
-             // Generate letter_code otomatis
-             $letterCode = $this->generateLetterCode();
-     
-             // Siapkan data surat
-             $data = [
-                 'reference_number' => $request->reference_number,
-                 'from' => $request->from,
-                 'letter_date' => $request->letter_date,
-                 'letter_nature' => $request->letter_nature,
-                 'letter_code' => $letterCode,
-                 'description' => $request->description,
-                 'note' => $request->note,
-                 'type' => 'incoming',
-                 'user_id' => $user->id,
-             ];
-     
-             // Ambil lampiran (jika ada)
-             $attachments = $request->hasFile('attachments') ? $request->file('attachments') : [];
-     
-             // Kirim ke job queue (opsional)
-             StoreIncomingLetterJob::dispatch($data, $user->id, $attachments);
-     
-             return redirect()
-                 ->route('transaction.incoming.index')
-                 ->with('success', 'Surat sedang diproses');
-     
-         } catch (\Exception $exception) {
-             Log::error('Error queueing incoming letter: ' . $exception->getMessage(), [
-                 'user_id' => auth()->id(),
-                 'request_data' => $request->except(['attachments'])
-             ]);
-     
-             return back()
-                 ->withInput()
-                 ->with('error', $exception->getMessage());
-         }
-     }
+{
+    try {
+        $user = auth()->user();
+
+        if ($request->type !== 'incoming') {
+            throw new \Exception(__('menu.transaction.incoming_letter') . ' - Invalid letter type');
+        }
+
+        // Cek duplikat reference number
+        $exists = Letter::where('reference_number', $request->reference_number)
+            ->where('type', 'incoming')
+            ->exists();
+
+        if ($exists) {
+            throw new \Exception('Reference number already exists. Please try again.');
+        }
+
+        
+        $lettercode = $this->generateLetterCode();
+
+        // Simpan data surat masuk
+        DB::beginTransaction();
+
+        $letter = Letter::create([
+            'reference_number' => $request->reference_number,
+            'from' => $request->from,
+            'letter_date' => $request->letter_date,
+            'letter_nature' => $request->letter_nature,
+            'letter_code' => $lettercode,
+            'description' => $request->description,
+            'note' => $request->note,
+            'type' => 'incoming',
+            'user_id' => $user->id,
+        ]);
+
+        // Proses lampiran jika ada
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $filename = time() . '-' . str_replace(' ', '-', $file->getClientOriginalName());
+                $path = $file->storeAs('public/attachments', $filename);
+
+                $letter->attachments()->create([
+                    'file_path' => $path,
+                    'filename' => $filename,
+                    'extension' => $file->getClientOriginalExtension(),
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
+
+        DB::commit();
+
+        return redirect()
+            ->route('transaction.incoming.index')
+            ->with('success', 'Surat berhasil disimpan.');
+
+    } catch (\Exception $exception) {
+        DB::rollBack();
+
+        Log::error('❌ Gagal menyimpan surat masuk: ' . $exception->getMessage(), [
+            'user_id' => auth()->id(),
+            'request_data' => $request->except(['attachments'])
+        ]);
+
+        return back()
+            ->withInput()
+            ->with('error', $exception->getMessage());
+    }
+}
+
     /**
      * Handle file attachments
      * 
@@ -251,7 +265,7 @@ class IncomingLetterController extends Controller
     {
         return view('pages.transaction.incoming.edit', [
             'data' => $incoming,
-            'classifications' => Classification::all(),
+            'letter_code' => $incoming->letter_code
         ]);
     }
 
@@ -262,32 +276,36 @@ class IncomingLetterController extends Controller
      * @param Letter $incoming
      * @return RedirectResponse
      */
-    public function update(UpdateLetterRequest $request, Letter $incoming): RedirectResponse
-    {
-        try {
-            return DB::transaction(function() use ($request, $incoming) {
-                // Update letter data
-                $incoming->update($request->validated());
-                
-                // Handle new attachments
-                if ($request->hasFile('attachments')) {
-                    $this->handleAttachments($request->file('attachments'), $incoming, auth()->user());
-                }
-
-                return back()->with('success', __('menu.general.success'));
-            });
-
-        } catch (\Exception $exception) {
-            Log::error('Error updating incoming letter: ' . $exception->getMessage(), [
-                'letter_id' => $incoming->id,
-                'user_id' => auth()->id()
-            ]);
-            
-            return back()
-                ->withInput()
-                ->with('error', $exception->getMessage());
+   public function update(UpdateLetterRequest $request, Letter $incoming): RedirectResponse
+{
+    try {
+        if ($incoming->type !== 'incoming') {
+            throw new \Exception('Invalid letter type.');
         }
+
+        return DB::transaction(function () use ($request, $incoming) {
+            $incoming->update($request->validated());
+
+            if ($request->hasFile('attachments')) {
+                $this->handleAttachments($request->file('attachments'), $incoming, auth()->user());
+            }
+
+            return redirect()->route('transaction.incoming.index')
+                ->with('success', __('menu.general.success'));
+        });
+
+    } catch (\Exception $exception) {
+        Log::error('Error updating incoming letter: ' . $exception->getMessage(), [
+            'letter_id' => $incoming->id,
+            'user_id' => auth()->id()
+        ]);
+
+        return back()
+            ->withInput()
+            ->with('error', $exception->getMessage());
     }
+}
+
 
     /**
      * Remove the specified resource from storage.
@@ -331,11 +349,11 @@ class IncomingLetterController extends Controller
     public function getLetterCode(Request $request)
     {
         try {
-            $letterCode = $this->generateLetterCode();
+            $lettercode = $this->generateLetterCode();
             
             return response()->json([
                 'success' => true,
-                'letter_code' => $letterCode
+                'letter_code' => $lettercode
             ]);
         } catch (\Exception $e) {
             Log::error('Error generating reference number: ' . $e->getMessage());
