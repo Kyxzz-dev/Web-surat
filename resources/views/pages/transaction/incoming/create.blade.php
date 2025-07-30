@@ -61,7 +61,7 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                     <small class="form-text text-muted mt-1">
-                        ⚠️ Hanya file PDF yang diizinkan. Ukuran maksimal per file 10MB.
+                        * Hanya file PDF yang diizinkan. Ukuran maksimal per file 10MB.
                     </small>
                 </div>
             </div>
