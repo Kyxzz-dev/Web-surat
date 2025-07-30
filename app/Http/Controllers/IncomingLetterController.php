@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class IncomingLetterController extends Controller
 {
@@ -197,7 +198,7 @@ class IncomingLetterController extends Controller
     private function handleAttachments(array $attachments, Letter $letter, $user): void
     {
         $allowedExtensions = ['png', 'jpg', 'jpeg', 'pdf'];
-        $maxFileSize = 2048; // 2MB in KB
+        $maxFileSize = 10048; // 2MB in KB
 
         foreach ($attachments as $attachment) {
             $extension = strtolower($attachment->getClientOriginalExtension());

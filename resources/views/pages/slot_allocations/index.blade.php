@@ -34,10 +34,12 @@
                             <td>
                                 <a href="{{ route('reference.slot-allocations.edit', $slot->id) }}" class="btn btn-warning btn-sm">Edit</a>
 
-                                <form action="{{ route('reference.slot-allocations.destroy', $slot->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus slot ini?')">
+                                <form action="{{ route('reference.slot-allocations.destroy', $slot->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-danger btn-sm">Hapus</button>
+                                      <button class="btn btn-danger btn-sm btn-delete" type="button">
+                                    {{ __('menu.general.delete') }}
+                                </button>
                                 </form>
                             </td>
                         </tr>

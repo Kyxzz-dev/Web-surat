@@ -139,7 +139,6 @@ public function print()
      */
    public function destroy(User $user): RedirectResponse
 {
-    // Cek apakah user masih dipakai di surat
     if ($user->letters()->exists()) {
         return back()->with('error', 'Pengguna tidak dapat dihapus karena masih terhubung dengan data surat.');
     }

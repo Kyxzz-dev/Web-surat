@@ -52,9 +52,9 @@
                                 <form action="{{ route('reference.classification.destroy', $classification) }}" method="post" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                   <button type="submit" class="btn btn-danger btn-sm btn-delete-confirm">
-    {{ __('menu.general.delete') }}
-</button>
+                                  <button class="btn btn-danger btn-sm btn-delete" type="button">
+                                    {{ __('menu.general.delete') }}
+                                </button>
                                 </form>
 
                                 <button class="btn btn-warning btn-sm"

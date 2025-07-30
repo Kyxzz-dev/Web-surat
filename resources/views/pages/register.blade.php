@@ -70,6 +70,17 @@
                                 :label="'NIP'"
                             />
                         </div>
+                        <div class="mb-3">
+    <label for="bidang" class="form-label">Bidang</label>
+    <select name="bidang" id="bidang" class="form-select" required>
+        <option value="">-- Pilih Bidang --</option>
+        <option value="umum">Tata Usaha & Umum</option>
+        <option value="pengawasan">Pengawasan & Penindakan Keimigrasian</option>
+        <option value="intelijen">Intelijen & Kepatuhan Internal</option>
+        <option value="perjalanan">Dokumen Perjalanan, Izin Tinggal & Status Keimigrasian</option>
+    </select>
+</div>
+
 
                         <div class="mb-3">
                             <x-input-form name="password" type="password" :label="__('model.user.password')" />
