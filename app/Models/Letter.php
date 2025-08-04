@@ -33,6 +33,7 @@ class Letter extends Model
         'classification_code',
         'user_id',
         'sub_classification_id',
+        'bidang',
     ];
 
     /**
@@ -120,6 +121,11 @@ class Letter extends Model
             ->when($since && $until && $filter, function ($query, $condition) use ($since, $until, $filter) {
                 return $query->whereBetween(DB::raw('DATE(' . $filter . ')'), [$since, $until]);
             });
+    }
+
+        public function scopeBidang($query, $bidang)
+    {
+        return $query->where('bidang', $bidang);
     }
 
     /**

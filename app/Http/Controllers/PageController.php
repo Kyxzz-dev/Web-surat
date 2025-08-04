@@ -27,7 +27,7 @@ class PageController extends Controller
         $userId = $user->id;
 
         // Pengecekan role langsung via string
-        $isAdmin = $user->role === 'admin';
+        $isAdmin = in_array($user->role, ['admin', 'super-admin']);
 
         if ($isAdmin) {
             $todayIncomingLetter = Letter::incoming()->today()->count();

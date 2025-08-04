@@ -28,6 +28,9 @@
                                     value="received_date" @selected(old('filter', $filter) == 'received_date')>{{ __('model.letter.received_date') }}</option>
                                 <option
                                     value="created_at" @selected(old('filter', $filter) == 'created_at')>{{ __('model.general.created_at') }}</option>
+                                    <option value="bidang" @selected(old('filter', $filter) == 'bidang')>
+                {{ __('model.user.bidang') }}
+            </option>
                             </select>
                         </div>
                     </div>

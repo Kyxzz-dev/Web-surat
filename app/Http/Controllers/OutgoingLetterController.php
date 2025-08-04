@@ -23,15 +23,12 @@ class OutgoingLetterController extends Controller
 {
     public function index(Request $request): View
     {
-        $user  = auth()->user();
-        $query = Letter::outgoing();
-
-        if ($user->role !== 'admin') {
-            $query->where('user_id', $user->id);
-        }
-
         return view('pages.transaction.outgoing.index', [
-            'data'   => $query->render($request->search),
+            'data' => Letter::outgoing()
+    ->when(auth()->user()->role === 'admin', function ($query) {
+        return $query->bidang(auth()->user()->bidang);
+    })
+    ->render($request->search),
             'search' => $request->search,
         ]);
     }
@@ -39,22 +36,30 @@ class OutgoingLetterController extends Controller
     public function agenda(Request $request): View
     {
         return view('pages.transaction.outgoing.agenda', [
-            'data'   => Letter::outgoing()->agenda($request->since, $request->until, $request->filter)->render($request->search),
-            'search' => $request->search,
-            'since'  => $request->since,
-            'until'  => $request->until,
+           'data' => Letter::outgoing()
+    ->when(auth()->user()->role === 'admin', function ($query) {
+        return $query->bidang(auth()->user()->bidang);
+    })
+    ->agenda($request->since, $request->until, $request->filter)
+    ->render($request->search),
+     'search' => $request->search,
+            'since' => $request->since,
+            'until' => $request->until,
             'filter' => $request->filter,
-            'query'  => $request->getQueryString(),
+            'query' => $request->getQueryString(),
         ]);
     }
 
-    public function print(Request $request): View
+   public function print(Request $request): View
 {
     $agenda = __('menu.agenda.menu');
     $letter = __('menu.agenda.outgoing_letter');
     $title  = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
 
     $letters = Letter::outgoing()
+        ->when(auth()->user()->role === 'admin', function ($query) {
+            return $query->bidang(auth()->user()->bidang); // filter berdasarkan bidang admin
+        })
         ->agenda($request->since, $request->until, $request->filter)
         ->orderBy('letter_date')
         ->get()
@@ -67,15 +72,13 @@ class OutgoingLetterController extends Controller
     foreach ($letters as $date => $items) {
         $filledGroup = [];
 
-        // Tambahkan data yang sudah ada
         foreach ($items as $letter) {
             $filledGroup[] = $letter;
         }
 
-        // Hitung kekurangannya
         $missing = 30 - count($filledGroup);
         for ($i = 0; $i < $missing; $i++) {
-            $filledGroup[] = null; // Tambahkan baris kosong
+            $filledGroup[] = null;
         }
 
         $filledData[$date] = $filledGroup;
@@ -139,6 +142,7 @@ class OutgoingLetterController extends Controller
         $newLetter['user_id'] = $user->id;
         $newLetter['agenda_number'] = $agendaNumber;
         $newLetter['letter_date'] = $date;
+        $newLetter['bidang'] = $user->bidang;
 
         $classification = Classification::findOrFail($request->classification_id);
         $sub = $request->sub_classification_id

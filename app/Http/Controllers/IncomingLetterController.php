@@ -30,7 +30,13 @@ class IncomingLetterController extends Controller
     public function index(Request $request): View
     {
         return view('pages.transaction.incoming.index', [
-            'data' => Letter::incoming()->render($request->search),
+            'data' => Letter::incoming()
+    ->when(auth()->user()->role === 'admin', function ($query) {
+    return $query->whereHas('user', function ($q) {
+        $q->where('bidang', auth()->user()->bidang);
+    });
+})
+    ->render($request->search),
             'search' => $request->search,
         ]);
     }
@@ -44,8 +50,15 @@ class IncomingLetterController extends Controller
     public function agenda(Request $request): View
     {
         return view('pages.transaction.incoming.agenda', [
-            'data' => Letter::incoming()->agenda($request->since, $request->until, $request->filter)->render($request->search),
-            'search' => $request->search,
+           'data' => Letter::incoming()
+    ->when(auth()->user()->role === 'admin', function ($query) {
+                return $query->whereHas('user', function ($q) {
+                    $q->where('bidang', auth()->user()->bidang);
+                });
+            })
+    ->agenda($request->since, $request->until, $request->filter)
+    ->render($request->search),
+     'search' => $request->search,
             'since' => $request->since,
             'until' => $request->until,
             'filter' => $request->filter,
@@ -57,21 +70,30 @@ class IncomingLetterController extends Controller
      * @param Request $request
      * @return View
      */
-    public function print(Request $request): View
-    {
-        $agenda = __('menu.agenda.menu');
-        $letter = __('menu.agenda.incoming_letter');
-        $title = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
-        return view('pages.transaction.incoming.print', [
-            'data' => Letter::incoming()->agenda($request->since, $request->until, $request->filter)->get(),
-            'search' => $request->search,
-            'since' => $request->since,
-            'until' => $request->until,
-            'filter' => $request->filter,
-            'config' => Config::pluck('value','code')->toArray(),
-            'title' => $title,
-        ]);
-    }
+   public function print(Request $request): View
+{
+    $agenda = __('menu.agenda.menu');
+    $letter = __('menu.agenda.incoming_letter');
+    $title = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
+
+    $data = Letter::incoming()
+        ->when(auth()->user()->role === 'admin', function ($query) {
+            return $query->bidang(auth()->user()->bidang); // filter berdasarkan bidang admin
+        })
+        // super-admin ga pake filter bidang, jadi dilewatin aja
+        ->agenda($request->since, $request->until, $request->filter)
+        ->get();
+
+    return view('pages.transaction.incoming.print', [
+        'data' => $data,
+        'search' => $request->search,
+        'since' => $request->since,
+        'until' => $request->until,
+        'filter' => $request->filter,
+        'config' => Config::pluck('value','code')->toArray(),
+        'title' => $title,
+    ]);
+}
 
     /**
      * Generate unique reference number for incoming letter
@@ -150,6 +172,7 @@ class IncomingLetterController extends Controller
             'note' => $request->note,
             'type' => 'incoming',
             'user_id' => $user->id,
+            'bidang' => $user->bidang,
         ]);
 
         // Proses lampiran jika ada

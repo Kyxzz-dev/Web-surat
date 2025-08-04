@@ -23,7 +23,13 @@ class UserController extends Controller
      */
     public function index(Request $request): View
 {
+    $user = auth()->user();
     $query = User::query();
+
+     if ($user->role === 'admin') {
+        $query->where('bidang', $user->bidang);
+    }
+
 
     // Search
     if ($request->filled('search')) {
@@ -43,8 +49,19 @@ class UserController extends Controller
         ]);
     }
 
-    // Ambil data
-    $data = $query->latest()->paginate(10);
+    // Ambil data dengan urutan role: super_admin → admin → staff
+$data = $query
+->orderByRaw("
+    CASE role
+        WHEN 'super_admin' THEN 1
+        WHEN 'admin' THEN 2
+        WHEN 'staff' THEN 3
+        ELSE 4
+    END
+")
+->orderBy('name')
+->paginate(10);
+
 
     // Kirim ke view
     return view('pages.user', [
@@ -65,7 +82,16 @@ class UserController extends Controller
 
 public function print()
 {
-    $data = \App\Models\User::all();
+     $user = auth()->user();
+
+    // Kalau superadmin bisa lihat semua
+    if ($user->role === 'super-admin') {
+        $data = User::all();
+    } else {
+        // Kalau admin, hanya lihat user dengan bidang yang sama
+        $data = User::where('bidang', $user->bidang)->get();
+    }
+
     $title = 'Laporan Data Pengguna';
 
     // Jika kamu pakai $config di layout cetakmu

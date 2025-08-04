@@ -115,7 +115,7 @@
 
 
     <!-- Create Modal -->
-    <div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1">
+    <!--<div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog">
             <form class="modal-content" method="post" action="{{ route('user.store') }}">
                 @csrf
@@ -143,6 +143,7 @@
             </form>
         </div>
     </div>
+    -->
 
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" data-bs-backdrop="static" tabindex="-1">

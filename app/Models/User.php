@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email_verified_at',
         'nip',
         'bidang',
+        'admin_id',
         'password',
         'phone',
         'role',
@@ -103,8 +104,39 @@ class User extends Authenticatable
                 'search' => $search,
             ]);
     }
+
+    public function scopeByAdmin($query, $adminId)
+{
+    return $query->where('admin_id', $adminId);
+}
     public function letters()
 {
     return $this->hasMany(Letter::class);
+}
+
+// User yang menjadi admin, punya banyak user:
+public function users()
+{
+    return $this->hasMany(User::class, 'admin_id');
+}
+
+// User yang merupakan bawahan dari admin tertentu
+public function admin()
+{
+    return $this->belongsTo(User::class, 'admin_id');
+}
+public function isSuperAdmin(): bool
+{
+    return $this->role === Role::SUPER_ADMIN->status();
+}
+
+public function isAdmin(): bool
+{
+    return $this->role === Role::ADMIN->status();
+}
+
+public function isStaff(): bool
+{
+    return $this->role === Role::STAFF->status();
 }
 }

@@ -88,7 +88,8 @@ class ClassificationController extends Controller
     try {
         // ❗ Validasi: cek apakah klasifikasi memiliki sub-klasifikasi
         if ($classification->subClassifications()->exists()) {
-            return back()->with('error', 'Tidak dapat menghapus klasifikasi yang memiliki sub-klasifikasi.');
+             $classification->delete();
+            return back()->with('success', __('menu.general.success'));
         }
 
         $classification->delete();

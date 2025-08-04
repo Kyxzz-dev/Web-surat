@@ -60,8 +60,8 @@
                     @error('attachments')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-text text-muted mt-1">
-                        * Hanya file PDF yang diizinkan. Ukuran maksimal per file 10MB.
+                    <small class="form-text mt-1" style="color: black;">
+                        <span style="color: red;">*</span> Hanya file PDF yang diizinkan. Ukuran maksimal per file 5MB.
                     </small>
                 </div>
             </div>

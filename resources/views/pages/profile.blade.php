@@ -70,7 +70,7 @@
                                     <span class="d-none d-sm-block">{{ __('menu.general.cancel') }}</span>
                                 </button>
 
-                                <p class="text-muted mb-0">< 800K (JPG, GIF, PNG)</p>
+                                <p class="text-muted mb-0">* Maksimal file 800 kb (JPG, PNG)</p>
                             </div>
                         </div>
                     </div>
@@ -92,6 +92,18 @@
                             <div class="col-md-6">
                                 <x-input-form name="phone" :label="__('model.user.phone')" :value="$data->phone ?? ''" />
                             </div>
+                            <!-- <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="mb-3":>
+                                    <label for="bidang" class="form-label">Bidang</label>
+                                    <select name="bidang" id="bidang" class="form-select" required>
+                                        <option value="">-- Pilih Bidang --</option>
+                                        <option value="umum">Tata Usaha & Umum</option>
+                                        <option value="pengawasan">Pengawasan & Penindakan Keimigrasian</option>
+                                        <option value="intelijen">Intelijen & Kepatuhan Internal</option>
+                                        <option value="perjalanan">Dokumen Perjalanan, Izin Tinggal & Status Keimigrasian</option>
+                                    </select>
+                                </div>
+                            </div> -->
                           {{-- Form password yang diperbaiki --}}
 <div class="col-md-6">
     <label for="new_password" class="form-label">Ganti Password</label>

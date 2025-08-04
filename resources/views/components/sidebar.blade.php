@@ -39,7 +39,7 @@
                 <div data-i18n="{{ __('menu.transaction.menu') }}">{{ __('menu.transaction.menu') }}</div>
             </a>
             <ul class="menu-sub">
-                  @if (auth()->check() && auth()->user()->role === 'admin')
+                      @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
                 <li
                     class="menu-item {{ \Illuminate\Support\Facades\Route::is('transaction.incoming.*') || \Illuminate\Support\Facades\Route::is('transaction.disposition.*') ? 'active' : '' }}">
                     <a href="{{ route('transaction.incoming.index') }}" class="menu-link">
@@ -60,7 +60,7 @@
 
             </ul>
         </li>
-        @if (auth()->check() && auth()->user()->role === 'admin')
+            @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
         <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('agenda.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-book"></i>
@@ -85,7 +85,7 @@
             </ul>
         </li>
         @endif
-        @if (auth()->check() && auth()->user()->role === 'admin')
+            @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('menu.header.other_menu') }}</span>
         </li>
@@ -95,7 +95,7 @@
                 <div data-i18n="{{ __('menu.gallery.menu') }}">{{ __('menu.gallery.menu') }}</div>
             </a>
             <ul class="menu-sub">
-                    @if (auth()->check() && auth()->user()->role === 'admin')
+                       @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
                 <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('gallery.incoming') ? 'active' : '' }}">
                     <a href="{{ route('gallery.incoming') }}" class="menu-link">
                         <div data-i18n="{{ __('menu.gallery.incoming_letter') }}">
@@ -112,7 +112,7 @@
             </ul>
         </li>
         @endif
-        @if (auth()->check() && auth()->user()->role === 'admin')
+        @if (auth()->check() && auth()->user()->role === 'super-admin')
         <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-analyse"></i>
@@ -131,6 +131,7 @@
                         <div data-i18n="{{ __('menu.reference.status') }}">{{ __('menu.reference.status') }}</div>
                     </a>
                 </li> -->
+                
                 <li
                     class="menu-item {{ \Illuminate\Support\Facades\Route::is('reference.slot-allocations.*') ? 'active' : '' }}">
                     <a href="{{ route('reference.slot-allocations.index') }}" class="menu-link">
@@ -141,13 +142,15 @@
                 </li>
             </ul>
         </li>
-        <!-- User Management -->
-        <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('user.*') ? 'active' : '' }}">
-            <a href="{{ route('user.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user-pin"></i>
-                <div data-i18n="{{ __('menu.users') }}">{{ __('menu.users') }}</div>
-            </a>
-        </li>
         @endif
+       @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
+    <!-- User Management -->
+    <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('user.*') ? 'active' : '' }}">
+        <a href="{{ route('user.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user-pin"></i>
+            <div data-i18n="{{ __('menu.users') }}">{{ __('menu.users') }}</div>
+        </a>
+    </li>
+@endif
     </ul>
 </aside>

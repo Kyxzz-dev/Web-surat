@@ -84,6 +84,9 @@
             </div>
             <div class="card-footer pt-0">
                 <button class="btn btn-primary" type="submit">{{ __('menu.general.update') }}</button>
+                <a href="{{ url()->previous() }}" class="btn btn-secondary">
+        {{ __('menu.general.cancel') }}
+    </a>
             </div>
         </form>
     </div>

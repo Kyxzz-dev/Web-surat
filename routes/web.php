@@ -12,6 +12,7 @@ use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
+use App\Enums\Role;
 
 
 /*
@@ -55,11 +56,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('user', \App\Http\Controllers\UserController::class)
         ->except(['show', 'edit', 'create'])
-        ->middleware(['role:admin']);   
+        ->middleware(['role:admin,super-admin']);   
     
     Route::get('user/print', [\App\Http\Controllers\UserController::class, 'print'])
         ->name('user.print')
-        ->middleware(['role:admin']);
+        ->middleware(['role:admin,super-admin']);
 
     Route::get('profile', [\App\Http\Controllers\PageController::class, 'profile'])
         ->name('profile.show');
@@ -71,10 +72,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings', [\App\Http\Controllers\PageController::class, 'settings'])
         ->name('settings.show')
-        ->middleware(['role:admin']);
+        ->middleware(['role:admin,super-admin']);
     Route::put('settings', [\App\Http\Controllers\PageController::class, 'settingsUpdate'])
         ->name('settings.update')
-        ->middleware(['role:admin']);
+        ->middleware(['role:admin,super-admin']);
 
     Route::delete('attachment', [\App\Http\Controllers\PageController::class, 'removeAttachment'])
         ->name('attachment.destroy');
@@ -85,28 +86,24 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('{letter}/disposition', \App\Http\Controllers\DispositionController::class)->except(['show']);
     });
 
-    Route::prefix('agenda')->as('agenda.')->middleware(['role:admin'])->group(function () {
+    Route::prefix('agenda')->as('agenda.')->middleware(['role:admin,super-admin'])->group(function () {
     Route::get('incoming', [\App\Http\Controllers\IncomingLetterController::class, 'agenda'])->name('incoming');
     Route::get('incoming/print', [\App\Http\Controllers\IncomingLetterController::class, 'print'])->name('incoming.print');
     Route::get('outgoing', [\App\Http\Controllers\OutgoingLetterController::class, 'agenda'])->name('outgoing');
     Route::get('outgoing/print', [\App\Http\Controllers\OutgoingLetterController::class, 'print'])->name('outgoing.print');
-    //Route::get('/agenda/user', [UserController::class, 'agenda'])->name('agenda.user');
-//Route::get('/agenda/user/print', [UserController::class, 'printAgenda'])->name('agenda.user.print');
-//Route::get('/agenda/user/print', [UserController::class, 'print'])->name('agenda.user.print');
-
 });
 
     Route::prefix('gallery')->as('gallery.')->group(function () {
         Route::get('incoming', [\App\Http\Controllers\LetterGalleryController::class, 'incoming'])->name('incoming');
         Route::get('outgoing', [\App\Http\Controllers\LetterGalleryController::class, 'outgoing'])->name('outgoing');
-    })->middleware(['role:admin']);
+    })->middleware(['role:admin,super-admin']);
 
-    Route::prefix('reference')->as('reference.')->middleware(['role:admin'])->group(function () {
-        Route::post('/classification/sub', [ClassificationController::class, 'storeSub'])->name('classification.storeSub');
-        Route::resource('classification', \App\Http\Controllers\ClassificationController::class)->except(['show', 'create', 'edit']);
-        Route::resource('status', \App\Http\Controllers\LetterStatusController::class)->except(['show', 'create', 'edit']);
-        Route::resource('slot-allocations', \App\Http\Controllers\SlotAllocationController::class)->except(['show']);
-    });
+    Route::prefix('reference')->as('reference.')->middleware(['role:admin,super-admin'])->group(function () {
+    Route::post('/classification/sub', [ClassificationController::class, 'storeSub'])->name('classification.storeSub');
+    Route::resource('classification', \App\Http\Controllers\ClassificationController::class)->except(['show', 'create', 'edit']);
+    Route::resource('status', \App\Http\Controllers\LetterStatusController::class)->except(['show', 'create', 'edit']);
+    Route::resource('slot-allocations', \App\Http\Controllers\SlotAllocationController::class)->except(['show']);
+});
 
     
 
