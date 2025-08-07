@@ -24,7 +24,7 @@
     h1 {
         font-size: 20px;
         font-weight: bold;
-        color: #FFAB00;
+        color: #000;
     }
 
     h4 {
@@ -34,7 +34,7 @@
     }
 
     hr {
-        border: 1px solid #FFAB00;
+        border: 1px solid #000;
         margin: 15px 0 20px;
     }
 
@@ -129,12 +129,20 @@
 
     <h2>{{ $title }}</h2>
 
-    @if($since && $until && $filter)
-        <div id="filter-section">
+    @if(($since && $until && $filter) || $search)
+    <div id="filter-section">
+        @if($since && $until && $filter)
             <strong>{{ __('model.letter.' . $filter) }}:</strong> {{ "$since - $until" }}<br>
-            <strong>Total:</strong> {{ count($data) }}
-        </div>
-    @endif
+        @endif
+
+        @if($search)
+            <strong>{{ __('model.letter.bidang') }}:</strong> {{ ucfirst($search) }}<br>
+        @endif
+
+        <strong>Total:</strong> {{ count($data) }}
+    </div>
+@endif
+
 
     <table>
         <thead>
@@ -143,6 +151,7 @@
             <th>{{ __('model.letter.reference_number') }}</th>
             <th>{{ __('model.letter.letter_date') }}</th>
             <th>{{ __('model.letter.from') }}</th>
+            <th>{{ __('model.letter.bidang') }}</th>
             <th>{{ __('model.letter.description') }}</th>
             <th>{{ __('model.letter.note') }}</th>
         </tr>
@@ -154,6 +163,7 @@
                 <td>{{ $letter->reference_number }}</td>
                 <td>{{ $letter->formatted_letter_date }}</td>
                 <td>{{ $letter->from }}</td>
+                <td>{{ $letter->bidang }}</td>
                 <td>{{ $letter->description }}</td>
                 <td>{{ $letter->note }}</td>
             </tr>

@@ -130,6 +130,7 @@ class PageController extends Controller
 
     public function settings(Request $request): View
     {
+        
         return view('pages.setting', [
             'configs' => Config::all(),
         ]);

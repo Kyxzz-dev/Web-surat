@@ -27,6 +27,13 @@
     @else
         {{ $letter->agenda_number }}
     @endif
+    @auth
+    @if(auth()->user()->role === 'super-admin')
+        <br>
+        <span class="text-secondary">Bidang :</span>
+        {{ $letter->bidang ?? '-' }}
+    @endif
+@endauth
                 </small>
             </div>
             <div class="card-title d-flex flex-row">
@@ -55,7 +62,7 @@
                         @endif
                         <a class="dropdown-item"
                             href="{{ route('transaction.incoming.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
-                        <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
+                        <form action="{{ route('transaction.incoming.destroy', $letter) }}" class="d-inline"
                             method="post">
                             @csrf
                             @method('DELETE')
@@ -72,7 +79,7 @@
                         @endif
                         <a class="dropdown-item"
                             href="{{ route('transaction.outgoing.edit', $letter) }}">{{ __('menu.general.edit') }}</a>
-                            @if (auth()->check() && auth()->user()->role === 'admin')
+                           @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
                         
                             <form action="{{ route('transaction.outgoing.destroy', $letter) }}" class="d-inline"
                             method="post">

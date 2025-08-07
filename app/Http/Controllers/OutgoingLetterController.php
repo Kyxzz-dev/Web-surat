@@ -34,21 +34,27 @@ class OutgoingLetterController extends Controller
     }
 
     public function agenda(Request $request): View
-    {
-        return view('pages.transaction.outgoing.agenda', [
-           'data' => Letter::outgoing()
-    ->when(auth()->user()->role === 'admin', function ($query) {
-        return $query->bidang(auth()->user()->bidang);
-    })
-    ->agenda($request->since, $request->until, $request->filter)
-    ->render($request->search),
-     'search' => $request->search,
-            'since' => $request->since,
-            'until' => $request->until,
-            'filter' => $request->filter,
-            'query' => $request->getQueryString(),
-        ]);
-    }
+{
+    return view('pages.transaction.outgoing.agenda', [
+        'data' => Letter::outgoing()
+            ->when(auth()->user()->role === 'admin', function ($query) {
+                return $query->bidang(auth()->user()->bidang);
+            })
+            ->agenda($request->since, $request->until, $request->filter, $request->search)
+
+            ->render($request->search, $request->filter),
+
+        'search' => $request->search,
+        'since' => $request->since,
+        'until' => $request->until,
+        'filter' => $request->filter,
+        'bidang' => $request->bidang,
+        'query' => $request->getQueryString(),
+    ]);
+}
+
+    
+
 
    public function print(Request $request): View
 {

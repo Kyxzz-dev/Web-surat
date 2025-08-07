@@ -24,7 +24,7 @@
     h1 {
         font-size: 20px;
         font-weight: bold;
-        color: #FFAB00;
+        color: #000;
     }
 
     h4 {
@@ -34,7 +34,7 @@
     }
 
     hr {
-        border: 1px solid #FFAB00;
+        border: 1px solid #000;
         margin: 15px 0 20px;
     }
 
@@ -140,6 +140,7 @@
         <th>{{ __('model.letter.reference_number') }}</th>
         <th>{{ __('model.letter.letter_date') }}</th>
         <th>{{ __('model.letter.to') }}</th>
+        <th>{{ __('model.letter.bidang') }}</th>
         <th>{{ __('model.letter.received_date') }}</th>
         <th>{{ __('model.letter.description') }}</th>
         <th>{{ __('model.letter.note') }}</th>
@@ -152,6 +153,7 @@
             <td>{{ $letter->reference_number ?? '' }}</td>
             <td>{{ $letter->formatted_letter_date ?? \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}</td>
             <td>{{ $letter->to ?? '' }}</td>
+            <td>{{ $letter->bidang ?? '' }}</td>
             <td>{{ $letter->formatted_received_date ?? '' }}</td>
             <td>{{ $letter->description ?? '' }}</td>
             <td>{{ $letter->note ?? '' }}</td>

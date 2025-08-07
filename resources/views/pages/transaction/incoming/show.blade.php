@@ -2,7 +2,7 @@
 
 @section('content')
 
-    @if(auth()->id() === $data->user_id || auth()->user()->role === 'admin')
+    @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
         <x-breadcrumb
             :values="[__('menu.transaction.menu'), __('menu.transaction.incoming_letter'), __('menu.general.view')]">
         </x-breadcrumb>
@@ -22,15 +22,6 @@
 
                     <dt class="col-sm-3">{{ __('model.letter.reference_number') }}</dt>
                     <dd class="col-sm-9">{{ $data->reference_number }}</dd>
-
-                    <dt class="col-sm-3">{{ __('model.letter.agenda_number') }}</dt>
-                    <dd class="col-sm-9">{{ $data->agenda_number }}</dd>
-
-                    <dt class="col-sm-3">{{ __('model.classification.code') }}</dt>
-                    <dd class="col-sm-9">{{ $data->classification_code }}</dd>
-
-                    <dt class="col-sm-3">{{ __('model.classification.type') }}</dt>
-                    <dd class="col-sm-9">{{ $data->classification?->type ?? '-' }}</dd>
 
                     <dt class="col-sm-3">{{ __('model.letter.from') }}</dt>
                     <dd class="col-sm-9">{{ $data->from }}</dd>

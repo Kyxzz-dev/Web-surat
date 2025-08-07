@@ -4,25 +4,40 @@ namespace Database\Seeders;
 
 use App\Enums\Role;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Administrator',
-            'email' => 'admin@admin.com',
-            'phone' => '082121212121',
-            'password' => Hash::make('admin'),
-            'role' => Role::ADMIN->status(),
+        $bidangList = ['Intelijen', 'Pengawasan', 'Umum', 'Perjalanan'];
+
+        foreach ($bidangList as $bidang) {
+            // Pakai factory untuk admin tiap bidang
+            $admin = User::factory()->create([
+                'name' => "Admin $bidang",
+                'email' => strtolower("admin_$bidang@example.com"),
+                'role' => Role::ADMIN->status(),
+                'bidang' => $bidang,
+            ]);
+
+            // Pakai factory juga untuk 2 staff, disambungkan ke admin di atas
+            User::factory(2)->create([
+                'role' => Role::STAFF->status(),
+                'bidang' => $bidang,
+                'admin_id' => $admin->id,
+            ]);
+        }
+
+        // Tambah super admin
+        User::factory(2)->create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@example.com',
+            'role' => Role::SUPER_ADMIN->status(),
+            'bidang' => null,
         ]);
     }
 }

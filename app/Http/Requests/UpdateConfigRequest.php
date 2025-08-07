@@ -12,10 +12,13 @@ class UpdateConfigRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize(): bool
-    {
-        return auth()->user()->role == Role::ADMIN->status();
-    }
+   public function authorize(): bool
+{
+    return in_array(auth()->user()->role, [
+        Role::ADMIN->status(),
+        Role::SUPER_ADMIN->status(), 
+    ]);
+}
 
     public function attributes(): array
     {

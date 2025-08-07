@@ -13,6 +13,7 @@ return [
         'dispose' => 'Disposisi Surat',
         'attachment' => 'Lampiran',
         'letter_nature' => 'Sifat Surat',
+        'bidang' => 'Bidang',
         'letter_code' => 'Kode Surat',
         'status' => [
             'all' => 'Semua',
@@ -54,6 +55,7 @@ return [
         'reset_password' => 'Setel ulang Kata Sandi menjadi bawaan?',
         'make_admin' => 'Jadikan user sebagai ADMIN',
         'login' => 'NIP atau Email',
+        'bidang' => 'Bidang',
     ],
     'general' => [
         'created_at' => 'Dibuat pada',

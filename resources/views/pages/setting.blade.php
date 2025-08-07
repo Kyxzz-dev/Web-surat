@@ -31,7 +31,7 @@
                             @endforeach
                         </div>
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-primary me-2">{{ __('menu.general.update') }}</button>
+                            <button type="submit" class="btn btn-primary me-2">{{ __('menu.general.update') }} </button>
                             <button type="reset" class="btn btn-outline-secondary">{{ __('menu.general.cancel') }}</button>
                         </div>
                     </form>

@@ -82,7 +82,7 @@ class IncomingLetterController extends Controller
         })
         // super-admin ga pake filter bidang, jadi dilewatin aja
         ->agenda($request->since, $request->until, $request->filter)
-        ->get();
+        ->render($request->search, $request->filter, true);
 
     return view('pages.transaction.incoming.print', [
         'data' => $data,

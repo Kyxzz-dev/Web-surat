@@ -93,35 +93,51 @@ class Letter extends Model
     }
 
     public function scopeSearch($query, $search)
-    {
-        return $query->when($search, function($query, $find) {
-            return $query
-                ->where('reference_number', $find)
-                ->orWhere('agenda_number', $find)
-                ->orWhere('from', 'LIKE', $find . '%')
-                ->orWhere('to', 'LIKE', $find . '%');
+{
+    return $query->when($search, function($query, $find) {
+        return $query
+            ->where('reference_number', $find)
+            ->orWhere('agenda_number', $find)
+            ->orWhere('from', 'LIKE', $find . '%')
+            ->orWhere('to', 'LIKE', $find . '%')
+            ->orWhere('bidang', 'LIKE', $find . '%');
+    });
+}
+
+
+
+public function scopeRender($query, $search, $filter = null, $isPrint = false)
+{
+    $builder = $query
+        ->with(['attachments', 'classification'])
+        ->search($search)
+        ->latest('letter_date');
+
+    return $isPrint
+        ? $builder->get() // untuk halaman print
+        : $builder->paginate(Config::getValueByCode(ConfigEnum::PAGE_SIZE))->appends([
+            'search' => $search,
+        ]);
+}
+
+
+
+
+public function scopeAgenda($query, $since, $until, $filter, $field = null)
+{
+    $allowedDateColumns = ['letter_date', 'created_at'];
+
+    return $query
+        ->when($since && $until && in_array($filter, $allowedDateColumns), function ($query) use ($since, $until, $filter) {
+            return $query->whereBetween(DB::raw('DATE(' . $filter . ')'), [$since, $until]);
+        })
+        ->when($field, function ($query) use ($field) {
+            return $query->where('bidang', $field);
         });
-    }
+}
 
-    public function scopeRender($query, $search)
-    {
-        return $query
-            ->with(['attachments', 'classification'])
-            ->search($search)
-            ->latest('letter_date')
-            ->paginate(Config::getValueByCode(ConfigEnum::PAGE_SIZE))
-            ->appends([
-                'search' => $search,
-            ]);
-    }
 
-    public function scopeAgenda($query, $since, $until, $filter)
-    {
-        return $query
-            ->when($since && $until && $filter, function ($query, $condition) use ($since, $until, $filter) {
-                return $query->whereBetween(DB::raw('DATE(' . $filter . ')'), [$since, $until]);
-            });
-    }
+
 
         public function scopeBidang($query, $bidang)
     {

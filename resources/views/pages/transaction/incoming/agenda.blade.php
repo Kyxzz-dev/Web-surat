@@ -22,18 +22,30 @@
                         <div class="mb-3">
                             <label for="filter" class="form-label">{{ __('menu.agenda.filter_by') }}</label>
                             <select class="form-select" id="filter" name="filter">
+                                 
                                 <option
                                     value="letter_date" @selected(old('filter', $filter) == 'letter_date')>{{ __('model.letter.letter_date') }}</option>
                                 <option
                                     value="received_date" @selected(old('filter', $filter) == 'received_date')>{{ __('model.letter.received_date') }}</option>
                                 <option
                                     value="created_at" @selected(old('filter', $filter) == 'created_at')>{{ __('model.general.created_at') }}</option>
-                                    <option value="bidang" @selected(old('filter', $filter) == 'bidang')>
-                {{ __('model.user.bidang') }}
-            </option>
                             </select>
                         </div>
                     </div>
+
+                    <div class="col">
+                    <div class="mb-3">
+                        <label for="search" class="form-label">Pilih Bidang</label>
+                        <select class="form-select" id="search" name="search">
+                            <option value=""> Semua Bidang </option>
+                            <option value="Umum" @selected(request('search')==='Umum' )>Umum</option>
+                            <option value="Intelijen" @selected(request('search')==='Intelijen' )>Intelijen</option>
+                            <option value="Pengawasan" @selected(request('search')==='Pengawasan' )>Pengawasan</option>
+                            <option value="Perjalanan" @selected(request('search')==='Perjalanan' )>Perjalanan</option>
+                        </select>
+                        <input type="hidden" name="field" value="{{ request('search') }}">
+                    </div>
+                </div>
                     <div class="col">
                         <div class="mb-3">
                             <label class="form-label">{{ __('menu.general.action') }}</label>
@@ -61,6 +73,7 @@
                     <th>{{ __('model.letter.letter_nature') }}</th>
                     <th>{{ __('model.letter.reference_number') }}</th>
                     <th>{{ __('model.letter.from') }}</th>
+                    <th>{{ __('model.user.bidang') }} </th>
                     <th>{{ __('model.letter.letter_date') }}</th>
                 </tr>
                 </thead>
@@ -74,6 +87,7 @@
                                 <a href="{{ route('transaction.incoming.show', $agenda) }}">{{ $agenda->reference_number }}</a>
                             </td>
                             <td>{{ $agenda->from }}</td>
+                            <td>{{ $agenda->bidang }}</td>
                             <td>{{ $agenda->formatted_letter_date }}</td>
                         </tr>
                     @endforeach
@@ -92,6 +106,7 @@
                     <th>{{ __('model.letter.letter_nature') }}</th>
                     <th>{{ __('model.letter.reference_number') }}</th>
                     <th>{{ __('model.letter.from') }}</th>
+                    <th>{{ __('model.user.bidang') }} </th>
                     <th>{{ __('model.letter.letter_date') }}</th>
                 </tr>
                 </tfoot>

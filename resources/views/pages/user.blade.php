@@ -22,9 +22,6 @@
 @section('content')
 <x-breadcrumb :values="[__('menu.users')]">
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-primary btn-create" data-bs-toggle="modal" data-bs-target="#createModal">
-            {{ __('menu.general.create') }}
-        </button>
         <a href="{{ route('user.print') }}" target="_blank" class="btn btn-warning">Cetak</a>
     </div>
 </x-breadcrumb>
@@ -45,6 +42,7 @@
                 <th>{{ __('model.user.name') }}</th>
                 <th>{{ __('model.user.email') }}</th>
                 <th>{{  __('model.user.nip')}}</th>
+                <th>{{  __('model.user.bidang')}}</th>
                 <th>{{ __('model.user.phone') }}</th>
                 <th>{{ __('model.user.is_active') }}</th>
                 <th>{{ __('menu.general.action') }}</th>
@@ -58,6 +56,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->nip }}</td>
+                        <td>{{ $user->bidang }}</td>
                         <td>{{ $user->phone }}</td>
                         <td>
                             <span class="badge bg-label-{{ $user->is_active ? 'success' : 'danger' }}">
@@ -115,7 +114,7 @@
 
 
     <!-- Create Modal -->
-    <!--<div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog">
             <form class="modal-content" method="post" action="{{ route('user.store') }}">
                 @csrf
@@ -143,7 +142,7 @@
             </form>
         </div>
     </div>
-    -->
+    
 
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" data-bs-backdrop="static" tabindex="-1">

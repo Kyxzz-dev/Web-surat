@@ -53,6 +53,7 @@ return [
         'nonactive' => 'Nonactive',
         'reset_password' => 'Reset Password to Default?',
         'login' => 'NIP or Email',
+        'bidang' => 'Field',
     ],
     'general' => [
         'created_at' => 'Created At',

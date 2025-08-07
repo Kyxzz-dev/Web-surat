@@ -15,6 +15,6 @@ class LetterSeeder extends Seeder
      */
     public function run(): void
     {
-        Letter::factory()->count(50)->create();
+        Letter::factory()->count(10)->create();
     }
 }

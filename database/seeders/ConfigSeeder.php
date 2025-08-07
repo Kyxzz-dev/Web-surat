@@ -26,15 +26,15 @@ class ConfigSeeder extends Seeder
             ],
             [
                 'code' => 'app_name',
-                'value' => 'Aplikasi Surat Menyurat',
+                'value' => 'Sinorat',
             ],
             [
                 'code' => 'institution_name',
-                'value' => '404nfid',
+                'value' => 'Staff_PritusId',
             ],
             [
                 'code' => 'institution_address',
-                'value' => 'Jl. Padat Karya',
+                'value' => 'Jl. Putri Hijau',
             ],
             [
                 'code' => 'institution_phone',
@@ -50,7 +50,7 @@ class ConfigSeeder extends Seeder
             ],
             [
                 'code' => 'pic',
-                'value' => 'M. Iqbal Effendi',
+                'value' => 'Staff Indo',
             ],
         ]);
     }

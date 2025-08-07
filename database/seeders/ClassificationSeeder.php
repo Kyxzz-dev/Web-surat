@@ -13,12 +13,12 @@ class ClassificationSeeder extends Seeder
      *
      * @return void
      */
-    public function run(): void
+      public function run(): void
     {
-        Classification::create([
-            'code' => 'ADM',
-            'type' => 'Administrasi',
-            'description' => 'Jenis surat yang berkaitan dengan administrasi',
+           Classification::insert([
+            ['id' => 1, 'code' => 'PR 01', 'type' => 'Program dan Anggaran'],
+            ['id' => 5, 'code' => 'PR 02', 'type' => 'Evaluasi'],
+            ['id' => 6, 'code' => 'PR 03', 'type' => 'Laporan Akuntabilitas Kinerja Instansi Pemerintah (LAKIP)'],
         ]);
     }
 }
