@@ -22,16 +22,24 @@ use Illuminate\Support\Facades\Cache;
 class OutgoingLetterController extends Controller
 {
     public function index(Request $request): View
-    {
-        return view('pages.transaction.outgoing.index', [
-            'data' => Letter::outgoing()
-    ->when(auth()->user()->role === 'admin', function ($query) {
-        return $query->bidang(auth()->user()->bidang);
-    })
-    ->render($request->search),
-            'search' => $request->search,
-        ]);
-    }
+{
+    return view('pages.transaction.outgoing.index', [
+        'data' => Letter::outgoing()
+            ->when(auth()->user()->role === 'staff', function ($query) {
+                // Staff hanya melihat surat yang dia buat
+                return $query->where('user_id', auth()->id());
+            })
+            ->when(auth()->user()->role === 'admin', function ($query) {
+                // Admin lihat surat sesuai bidangnya
+                return $query->bidang(auth()->user()->bidang);
+            })
+            // super-admin tidak difilter, biarkan semua data
+            ->render($request->search),
+
+        'search' => $request->search,
+    ]);
+}
+
 
     public function agenda(Request $request): View
 {
