@@ -22,48 +22,55 @@ use Illuminate\Support\Facades\Hash;
 class PageController extends Controller
 {
     public function index(Request $request): View
-    {
-        $user = Auth::user(); // Ambil user login
-        $userId = $user->id;
+{
+    $user = Auth::user();
+    $userId = $user->id;
+    $role = $user->role;
+    $bidang = $user->bidang;
 
-        // Pengecekan role langsung via string
-        $isAdmin = in_array($user->role, ['admin', 'super-admin']);
+    $isAdmin = in_array($role, ['admin', 'super-admin']);
 
-        if ($isAdmin) {
-            $todayIncomingLetter = Letter::incoming()->today()->count();
-            $todayOutgoingLetter = Letter::outgoing()->today()->count();
-            $todayDispositionLetter = Disposition::today()->count();
+    // Query builder dasar untuk surat masuk, keluar, disposisi
+    $incomingQuery = Letter::incoming();
+    $outgoingQuery = Letter::outgoing();
+    $dispositionQuery = Disposition::query();
 
-            $yesterdayIncomingLetter = Letter::incoming()->yesterday()->count();
-            $yesterdayOutgoingLetter = Letter::outgoing()->yesterday()->count();
-            $yesterdayDispositionLetter = Disposition::yesterday()->count();
-        } else {
-            $todayIncomingLetter = Letter::incoming()->today()->where('user_id', $userId)->count();
-            $todayOutgoingLetter = Letter::outgoing()->today()->where('user_id', $userId)->count();
-            $todayDispositionLetter = Disposition::today()->where('user_id', $userId)->count();
-
-            $yesterdayIncomingLetter = Letter::incoming()->yesterday()->where('user_id', $userId)->count();
-            $yesterdayOutgoingLetter = Letter::outgoing()->yesterday()->where('user_id', $userId)->count();
-            $yesterdayDispositionLetter = Disposition::yesterday()->where('user_id', $userId)->count();
-        }
-
-        $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter + $todayDispositionLetter;
-        $yesterdayLetterTransaction = $yesterdayIncomingLetter + $yesterdayOutgoingLetter + $yesterdayDispositionLetter;
-
-        return view('pages.dashboard', [
-            'greeting' => GeneralHelper::greeting(),
-            'currentDate' => Carbon::now()->isoFormat('dddd, D MMMM YYYY'),
-            'todayIncomingLetter' => $todayIncomingLetter,
-            'todayOutgoingLetter' => $todayOutgoingLetter,
-            'todayDispositionLetter' => $todayDispositionLetter,
-            'todayLetterTransaction' => $todayLetterTransaction,
-            'activeUser' => User::active()->count(),
-            'percentageIncomingLetter' => GeneralHelper::calculateChangePercentage($yesterdayIncomingLetter, $todayIncomingLetter),
-            'percentageOutgoingLetter' => GeneralHelper::calculateChangePercentage($yesterdayOutgoingLetter, $todayOutgoingLetter),
-            'percentageDispositionLetter' => GeneralHelper::calculateChangePercentage($yesterdayDispositionLetter, $todayDispositionLetter),
-            'percentageLetterTransaction' => GeneralHelper::calculateChangePercentage($yesterdayLetterTransaction, $todayLetterTransaction),
-        ]);
+    // Filter untuk staff
+    if (!$isAdmin) {
+        // Jika staff, filter berdasarkan user_id atau bidang
+        $incomingQuery->where('user_id', $userId);
+        $outgoingQuery->where('user_id', $userId);
+        $dispositionQuery->where('user_id', $userId);
     }
+
+    // ===== Hari ini =====
+    $todayIncomingLetter = (clone $incomingQuery)->today()->count();
+    $todayOutgoingLetter = (clone $outgoingQuery)->today()->count();
+    $todayDispositionLetter = (clone $dispositionQuery)->today()->count();
+
+    // ===== Kemarin =====
+    $yesterdayIncomingLetter = (clone $incomingQuery)->yesterday()->count();
+    $yesterdayOutgoingLetter = (clone $outgoingQuery)->yesterday()->count();
+    $yesterdayDispositionLetter = (clone $dispositionQuery)->yesterday()->count();
+
+    // ===== Total transaksi surat =====
+    $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter + $todayDispositionLetter;
+    $yesterdayLetterTransaction = $yesterdayIncomingLetter + $yesterdayOutgoingLetter + $yesterdayDispositionLetter;
+
+    return view('pages.dashboard', [
+        'greeting' => GeneralHelper::greeting(),
+        'currentDate' => Carbon::now()->isoFormat('dddd, D MMMM YYYY'),
+        'todayIncomingLetter' => $todayIncomingLetter,
+        'todayOutgoingLetter' => $todayOutgoingLetter,
+        'todayDispositionLetter' => $todayDispositionLetter,
+        'todayLetterTransaction' => $todayLetterTransaction,
+        'activeUser' => User::active()->count(),
+        'percentageIncomingLetter' => GeneralHelper::calculateChangePercentage($yesterdayIncomingLetter, $todayIncomingLetter),
+        'percentageOutgoingLetter' => GeneralHelper::calculateChangePercentage($yesterdayOutgoingLetter, $todayOutgoingLetter),
+        'percentageDispositionLetter' => GeneralHelper::calculateChangePercentage($yesterdayDispositionLetter, $todayDispositionLetter),
+        'percentageLetterTransaction' => GeneralHelper::calculateChangePercentage($yesterdayLetterTransaction, $todayLetterTransaction),
+    ]);
+}
 
     public function profile(Request $request): View
     {
