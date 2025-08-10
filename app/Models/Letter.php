@@ -163,10 +163,6 @@ public function scopeAgenda($query, $since, $until, $filter, $field = null)
     /**
      * @return HasMany
      */
-    public function dispositions(): HasMany
-    {
-        return $this->hasMany(Disposition::class, 'letter_id', 'id');
-    }
 
     /**
      * @return HasMany

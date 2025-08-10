@@ -139,12 +139,10 @@ public function print()
         $newUser = $request->validated();
         $newUser['is_active'] = isset($newUser['is_active']);
 
-        // Ganti password manual jika user isi field 'new_password'
         if ($request->filled('new_password')) {
             $newUser['password'] = Hash::make($request->input('new_password'));
         }
 
-        // Kalau ada checkbox reset_password, ganti dengan password default
         if ($request->reset_password) {
             $newUser['password'] = Hash::make(Config::getValueByCode(ConfigEnum::DEFAULT_PASSWORD));
         }

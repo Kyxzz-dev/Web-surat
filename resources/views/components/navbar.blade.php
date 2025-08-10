@@ -56,7 +56,7 @@
                             <span class="align-middle">{{ __('navbar.profile.profile') }}</span>
                         </a>
                     </li>
-                      @if (auth()->check() && in_array(auth()->user()->role, ['admin', 'super-admin']))
+                      @if (auth()->check() && in_array(auth()->user()->role, ['super-admin']))
                     <li>
                         <a class="dropdown-item" href="{{ route('settings.show') }}">
                             <i class="bx bx-cog me-2"></i>

@@ -46,8 +46,6 @@ class ClassificationController extends Controller
 {
     try {
         Classification::create($request->validated());
-
-        // ❌ Bersihkan cache klasifikasi form
         Cache::forget('form_classifications');
 
         return back()->with('success', __('menu.general.success'));
@@ -67,8 +65,6 @@ class ClassificationController extends Controller
 {
     try {
         $classification->update($request->validated());
-
-        // ❌ Bersihkan cache klasifikasi form
         Cache::forget('form_classifications');
 
         return back()->with('success', __('menu.general.success'));
@@ -86,15 +82,13 @@ class ClassificationController extends Controller
    public function destroy(Classification $classification): RedirectResponse
 {
     try {
-        // ❗ Validasi: cek apakah klasifikasi memiliki sub-klasifikasi
+
         if ($classification->subClassifications()->exists()) {
              $classification->delete();
             return back()->with('success', __('menu.general.success'));
         }
 
         $classification->delete();
-
-        // ❌ Bersihkan cache klasifikasi form
         Cache::forget('form_classifications');
 
         return back()->with('success', __('menu.general.success'));
@@ -120,7 +114,6 @@ class ClassificationController extends Controller
 
         SubClassification::create($data);
 
-        // ❌ Bersihkan cache klasifikasi dan sub-klasifikasi terkait
         Cache::forget('form_classifications');
         Cache::forget('sub_classifications_of_' . $data['classification_id']);
 

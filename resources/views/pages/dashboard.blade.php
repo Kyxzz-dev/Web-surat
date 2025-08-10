@@ -21,7 +21,6 @@
                 categories: [
                     '{{ __('dashboard.incoming_letter') }}',
                     '{{ __('dashboard.outgoing_letter') }}',
-                    // '{{ __('dashboard.disposition_letter') }}',
                 ],
             },
             colors: ['#28c76f', '#ea5455', '#00cfe8'],
@@ -122,16 +121,6 @@
                     :percentage="$percentageOutgoingLetter"
                 />
             </div>
-            <!-- <div class="col-lg-6 col-md-12 col-6 mb-4">
-                <x-dashboard-card-simple
-                    :label="__('dashboard.disposition_letter')"
-                    :value="$todayDispositionLetter"
-                    :daily="true"
-                    color="primary"
-                    icon="bx-envelope"
-                    :percentage="$percentageDispositionLetter"
-                />
-            </div> -->
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <x-dashboard-card-simple
                     :label="__('dashboard.active_user')"

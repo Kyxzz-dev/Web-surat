@@ -23,7 +23,7 @@ class RegisterController extends Controller
         'email'    => 'required|email|unique:users',
         'nip'      => 'required|string|unique:users,nip',
         'password' => 'required|min:6|confirmed',
-        'bidang'   => 'required|string', // validasi bidang
+        'bidang'   => 'required|string',
     ]);
 
     $otp = rand(100000, 999999);

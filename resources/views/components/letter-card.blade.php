@@ -41,13 +41,6 @@
                     <small class="d-block text-secondary">{{ __('model.letter.letter_date') }}</small>
                     {{ $letter->formatted_letter_date }}
                 </div>
-                @if($letter->type == 'incoming')
-                <!-- Disposisi <div class="mx-3">
-                    <a href="{{ route('transaction.disposition.index', $letter) }}"
-                        class="btn btn-primary btn">{{ __('model.letter.dispose') }}
-                        <span>({{ $letter->dispositions->count() }})</span></a>
-                </div>-->
-                @endif
                 <div class="dropdown d-inline-block">
                     <button class="btn p-0" type="button" id="dropdown-{{ $letter->type }}-{{ $letter->id }}"
                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

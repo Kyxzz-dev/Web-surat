@@ -48,35 +48,6 @@ Sebuah aplikasi web yang dirancang untuk mengelola surat masuk, keluar, dan disp
   - Atur jumlah data per halaman
   - Ubah identitas aplikasi & institusi (nama, alamat, kontak)
 
-## 🛢️ Skema Database
-![Database Schema](docs/database_schema.png)
-
-Bisa didownload di [sini](docs/surat.sql).
-
-## ⚡ Instalasi Super Cepat
-### 🔥 Persyaratan
-- **PHP > 8.1.0**
-- **MySQL**
-
-### 🚀 Setup dengan Makefile (Paling Gampang)
-1. Clone repository ini, lalu jalankan:
-   ```sh
-   make setup
-   ```
-2. Buat database baru di MySQL dan sesuaikan `.env`
-3. Jalankan setup database:
-   ```sh
-   make setup-db
-   ```
-4. (Opsional) Tambahkan data dummy:
-   ```sh
-   make setup-dummy
-   ```
-5. Jalankan aplikasi:
-   ```sh
-   make run
-   ```
-
 ### 🛠️ Setup Manual (Kalau Mau Cara Lama)
 1. Clone repository ini, lalu jalankan:
    ```sh
@@ -116,29 +87,8 @@ Bisa didownload di [sini](docs/surat.sql).
    php artisan serve
    ```
 
-
-## 🔑 Login
-Gunakan akun berikut buat masuk:
-
-| Surel            | Kata Sandi |
-|------------------|------------|
-| admin@admin.com | admin      |
-
-## 🌍 Pengaturan Bahasa
-Aplikasi ini support Bahasa Indonesia & Inggris. Ubah `config/app.php` bagian `locale` jadi `id` atau `en`.
-
 ## ⏰ Pengaturan Zona Waktu
 Ubah `timezone` di `config/app.php` sesuai kebutuhan. Lihat daftar zona waktu di sini: [PHP Timezones](https://www.php.net/manual/en/timezones.php).
-
-## 📸 Screenshot
-
-![Screenshot](docs/laravel-surat-menyurat-v1.png)
-
-## 🎥 Demo
-Tonton demo proyek ini di [YouTube](https://youtu.be/DtPqDZT-1VA?si=UJq7C92Ktivv82sZ).
-
-## 🎨 Template
-Proyek ini pakai template admin [Sneat](https://github.com/themeselection/sneat-html-admin-template-free).
 
 ## 📜 Lisensi
 Berlisensi di bawah [MIT License](LICENSE).

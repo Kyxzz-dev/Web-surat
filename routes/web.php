@@ -83,7 +83,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('transaction')->as('transaction.')->group(function () {
         Route::resource('incoming', \App\Http\Controllers\IncomingLetterController::class);
         Route::resource('outgoing', \App\Http\Controllers\OutgoingLetterController::class);
-        Route::resource('{letter}/disposition', \App\Http\Controllers\DispositionController::class)->except(['show']);
     });
 
     Route::prefix('agenda')->as('agenda.')->middleware(['role:admin,super-admin'])->group(function () {

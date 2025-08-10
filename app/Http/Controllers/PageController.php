@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateConfigRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Attachment;
 use App\Models\Config;
-use App\Models\Disposition;
 use App\Models\Letter;
 use App\Models\User;
 use Carbon\Carbon;
@@ -30,44 +29,37 @@ class PageController extends Controller
 
     $isAdmin = in_array($role, ['admin', 'super-admin']);
 
-    // Query builder dasar untuk surat masuk, keluar, disposisi
     $incomingQuery = Letter::incoming();
     $outgoingQuery = Letter::outgoing();
-    $dispositionQuery = Disposition::query();
 
     // Filter untuk staff
     if (!$isAdmin) {
-        // Jika staff, filter berdasarkan user_id atau bidang
+
         $incomingQuery->where('user_id', $userId);
         $outgoingQuery->where('user_id', $userId);
-        $dispositionQuery->where('user_id', $userId);
     }
 
     // ===== Hari ini =====
     $todayIncomingLetter = (clone $incomingQuery)->today()->count();
     $todayOutgoingLetter = (clone $outgoingQuery)->today()->count();
-    $todayDispositionLetter = (clone $dispositionQuery)->today()->count();
-
+  
     // ===== Kemarin =====
     $yesterdayIncomingLetter = (clone $incomingQuery)->yesterday()->count();
     $yesterdayOutgoingLetter = (clone $outgoingQuery)->yesterday()->count();
-    $yesterdayDispositionLetter = (clone $dispositionQuery)->yesterday()->count();
-
+  
     // ===== Total transaksi surat =====
-    $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter + $todayDispositionLetter;
-    $yesterdayLetterTransaction = $yesterdayIncomingLetter + $yesterdayOutgoingLetter + $yesterdayDispositionLetter;
+    $todayLetterTransaction = $todayIncomingLetter + $todayOutgoingLetter;
+    $yesterdayLetterTransaction = $yesterdayIncomingLetter + $yesterdayOutgoingLetter;
 
     return view('pages.dashboard', [
         'greeting' => GeneralHelper::greeting(),
         'currentDate' => Carbon::now()->isoFormat('dddd, D MMMM YYYY'),
         'todayIncomingLetter' => $todayIncomingLetter,
         'todayOutgoingLetter' => $todayOutgoingLetter,
-        'todayDispositionLetter' => $todayDispositionLetter,
         'todayLetterTransaction' => $todayLetterTransaction,
         'activeUser' => User::active()->count(),
         'percentageIncomingLetter' => GeneralHelper::calculateChangePercentage($yesterdayIncomingLetter, $todayIncomingLetter),
         'percentageOutgoingLetter' => GeneralHelper::calculateChangePercentage($yesterdayOutgoingLetter, $todayOutgoingLetter),
-        'percentageDispositionLetter' => GeneralHelper::calculateChangePercentage($yesterdayDispositionLetter, $todayDispositionLetter),
         'percentageLetterTransaction' => GeneralHelper::calculateChangePercentage($yesterdayLetterTransaction, $todayLetterTransaction),
     ]);
 }

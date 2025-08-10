@@ -22,14 +22,6 @@ return [
         ],
         'classification_code' => 'Kode Klasifikasi',
     ],
-    'disposition' => [
-        'to' => 'Penerima',
-        'content' => 'Isi Disposisi',
-        'status' => 'Sifat Status',
-        'note' => 'Catatan',
-        'due_date' => 'Tenggat Waktu',
-        'notice_me' => 'Disposisi untuk surat dengan nomor :reference_number.',
-    ],
     'classification' => [
         'code' => 'Kode',
         'type' => 'Klasifikasi',

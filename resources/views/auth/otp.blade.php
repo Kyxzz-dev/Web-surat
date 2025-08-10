@@ -22,8 +22,43 @@
         <link rel="stylesheet" href="{{ asset('sneat/vendor/css/theme-default.css') }}"/>
         <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}"/>
         <link rel="stylesheet" href="{{ asset('sneat/vendor/css/pages/page-auth.css') }}"/>
+    
+    
+    
+    <style>
+        .otp-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.otp-input {
+    width: 50px;
+    height: 60px;
+    font-size: 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #dce1e8;
+    background-color: white;
+    font-weight: 600;
+}
+
+.otp-input:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    outline: none;
+}
+
+.timer {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+    text-align: center;
+}
+    </style>
     </head>
 
+    
     <body>
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
@@ -57,9 +92,22 @@
                         @if (session('otp_user_id'))
                         <form method="POST" action="{{ route('otp.verify') }}">
     @csrf
-    <div class="mb-3">
-        <x-input-form name="otp" type="text" label="Kode OTP" placeholder="Silahkan Masukkan Kode OTP" />
-    </div>
+     <div class="mb-4">
+            <label for="otp" class="form-label">Masukkan Kode OTP</label>
+            <div class="otp-container">
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+            </div>
+            <input type="hidden" name="otp" id="otpValue">
+            
+            <div class="timer text-center">
+                <i class="far fa-clock me-1"></i> Kode berlaku selama <span id="countdown">10:00</span>
+            </div>
+        </div>
 
     <button type="submit" class="btn btn-primary d-grid w-100">Verifikasi</button>
 </form>
@@ -84,3 +132,72 @@
     </div>
     </body>
     </html>
+    <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const inputs = document.querySelectorAll('.otp-input');
+    const otpValue = document.getElementById('otpValue');
+    const form = document.getElementById('otpForm');
+
+    // Auto focus ke input berikutnya
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', function () {
+            if (this.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+            updateOTP();
+        });
+
+        // Backspace mundur
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+
+        // Paste OTP
+        input.addEventListener('paste', function (e) {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData('text').trim();
+            if (/^\d+$/.test(pasteData)) {
+                pasteData.split('').forEach((num, i) => {
+                    if (inputs[i]) inputs[i].value = num;
+                });
+                updateOTP();
+            }
+        });
+    });
+
+    function updateOTP() {
+        otpValue.value = Array.from(inputs).map(input => input.value).join('');
+    }
+
+    // Timer
+    let timeLeft = 600; // 10 menit
+    const countdownEl = document.getElementById('countdown');
+
+    const timer = setInterval(function () {
+        const minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        countdownEl.innerHTML = `${minutes}:${seconds}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            countdownEl.innerHTML = 'Waktu habis';
+            inputs.forEach(input => input.disabled = true);
+        }
+        timeLeft--;
+    }, 1000);
+
+    // Validasi sebelum submit
+    form.addEventListener('submit', function (e) {
+        updateOTP();
+        if (otpValue.value.length !== inputs.length) {
+            e.preventDefault();
+            alert('Lengkapi kode OTP terlebih dahulu!');
+        }
+    });
+});
+</script>
