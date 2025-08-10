@@ -70,6 +70,7 @@
                     <th>{{ __('model.letter.to') }}</th>
                     <th>{{ __('model.user.bidang') }} </th>
                     <th>{{ __('model.letter.letter_date') }}</th>
+                    <th>{{ __('model.letter.received_date') }}</th>
                 </tr>
             </thead>
             @if($data)
@@ -85,6 +86,7 @@
                     <td>{{ $agenda->to }}</td>
                     <td>{{ $agenda->bidang }}</td>
                     <td>{{ $agenda->formatted_letter_date }}</td>
+                    <td>{{ $agenda->formatted_received_date }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -104,6 +106,7 @@
                     <th>{{ __('model.letter.to') }}</th>
                     <th>{{ __('model.user.bidang') }} </th>
                     <th>{{ __('model.letter.letter_date') }}</th>
+                    <th>{{ __('model.letter.received_date') }}</th>
                 </tr>
             </tfoot>
         </table>

@@ -15,26 +15,37 @@
                 }
                 @endphp
 
-                <h5 class="text-nowrap mb-0 fw-bold">{{ $formattedReference }}</h5>
-                <small class="text-black">
-                    {{ $letter->type == 'incoming' ? $letter->from : $letter->to }} |
-                    <span class="text-secondary">Sifat Surat :</span>
-                    {{ $letter->letter_nature}}
-                    |
-                    <span class="text-secondary">Nomor Urut :</span>
-                    @if(request()->is('*incoming*'))
+               <h5 class="text-nowrap mb-0 fw-bold">{{ $formattedReference }}</h5>
+<small class="text-black">
+    {{ $letter->type == 'incoming' ? $letter->from : $letter->to }} |
+    <span class="text-secondary">Sifat Surat :</span>
+    {{ $letter->letter_nature }}
+    |
+    <span class="text-secondary">Nomor Urut :</span>
+    @if(request()->is('*incoming*'))
         {{ $letter->letter_code }}
     @else
         {{ $letter->agenda_number }}
     @endif
-    @auth
-    @if(auth()->user()->role === 'super-admin')
+    <br>
+
+    {{-- Hanya tampilkan tanggal pengambilan surat jika bukan incoming --}}
+    @if($letter->type !== 'incoming')
+        <span class="text-secondary">Tanggal Pengambilan Surat :</span>
+        {{ $letter->received_date 
+            ? \Carbon\Carbon::parse($letter->received_date)->translatedFormat('l, d F') 
+            : '-' }}
         <br>
-        <span class="text-secondary">Bidang :</span>
-        {{ $letter->bidang ?? '-' }}
     @endif
-@endauth
-                </small>
+
+    @auth
+        @if(auth()->user()->role === 'super-admin')
+            <span class="text-secondary">Bidang :</span>
+            {{ $letter->bidang ?? '-' }}
+        @endif
+    @endauth
+</small>
+
             </div>
             <div class="card-title d-flex flex-row">
                 <div class="d-inline-block mx-2 text-end text-black">

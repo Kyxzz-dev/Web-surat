@@ -56,11 +56,14 @@
     @endif
 
                         <div class="mb-3">
-                            <x-input-form name="name" type="text" :label="__('Nama Lengkap')" />
-                        </div>
+                         <x-input-form name="name" type="text" :label="__('Nama Lengkap')" required />
 
+                        </div>
                         <div class="mb-3">
-                            <x-input-form name="email" type="email" :label="__('Email')" />
+                            <x-input-form name="email" type="email" :label="__('Email')" required />
+                        </div>
+                         <div class="mb-3">
+                            <x-input-form name="phone" type="phone" :label="__('Nomor Telepon')" required/>
                         </div>
                         
                         <div class="mb-3">
@@ -68,7 +71,7 @@
                                 name="nip"
                                 type="text"
                                 :label="'NIP'"
-                            />
+                           required />
                         </div>
                         <div class="mb-3">
     <label for="bidang" class="form-label">Bidang</label>
@@ -82,13 +85,25 @@
 </div>
 
 
-                        <div class="mb-3">
-                            <x-input-form name="password" type="password" :label="__('model.user.password')" />
-                        </div>
+         <div class="mb-3">
+    <label for="password" class="form-label">{{ __('model.user.password') }}</label>
+    <div class="position-relative">
+        <input type="password" name="password" id="password" class="form-control" />
+        <span class="toggle-password" onclick="togglePassword('password', this)">
+            <i class="bx bx-hide"></i>
+        </span>
+    </div>
+</div>
 
-                        <div class="mb-3">
-                            <x-input-form name="password_confirmation" type="password" :label="__('model.user.confirm_password')" />
-                        </div>
+<div class="mb-3">
+    <label for="password_confirmation" class="form-label">{{ __('model.user.confirm_password') }}</label>
+    <div class="position-relative">
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" />
+        <span class="toggle-password" onclick="togglePassword('password_confirmation', this)">
+            <i class="bx bx-hide"></i>
+        </span>
+    </div>
+</div>
 
                         <button type="submit" class="btn btn-primary d-grid w-100">
                             {{ __('menu.auth.register') }}
@@ -109,3 +124,32 @@
 </div>
 </body>
 </html>
+<style>
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center; /* ini yang bikin icon bener-bener center */
+    cursor: pointer;
+    color: #6c757d;
+}
+.toggle-password:hover {
+    color: #333;
+}
+</style>
+
+<script>
+function togglePassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    const icon = el.querySelector('i');
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace('bx-hide', 'bx-show');
+    } else {
+        input.type = "password";
+        icon.classList.replace('bx-show', 'bx-hide');
+    }
+}
+</script>

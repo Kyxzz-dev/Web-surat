@@ -81,22 +81,27 @@ class OutgoingLetterController extends Controller
             return $item->letter_date->format('Y-m-d'); // Kelompokkan berdasarkan tanggal surat
         });
 
-    $filledData = [];
-
     foreach ($letters as $date => $items) {
-        $filledGroup = [];
+    $filledGroup = [];
 
-        foreach ($items as $letter) {
-            $filledGroup[] = $letter;
-        }
-
-        $missing = 30 - count($filledGroup);
-        for ($i = 0; $i < $missing; $i++) {
-            $filledGroup[] = null;
-        }
-
-        $filledData[$date] = $filledGroup;
+    foreach ($items as $letter) {
+        $filledGroup[] = $letter;
     }
+
+    $missing = 30 - count($filledGroup);
+
+    // Kalau tidak ada surat sama sekali di tanggal ini
+    if (count($filledGroup) === 0) {
+        $filledGroup[] = null; // hanya 1 baris kosong
+        $missing = 29;
+    }
+
+    for ($i = 0; $i < $missing; $i++) {
+        $filledGroup[] = null;
+    }
+
+    $filledData[$date] = $filledGroup;
+}
 
     return view('pages.transaction.outgoing.print', [
         'data'   => $filledData,

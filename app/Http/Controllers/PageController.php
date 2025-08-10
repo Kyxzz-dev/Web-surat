@@ -33,11 +33,20 @@ class PageController extends Controller
     $outgoingQuery = Letter::outgoing();
 
     // Filter untuk staff
-    if (!$isAdmin) {
+    if ($role === 'staff') {
+    // Staff hanya lihat surat yang dia buat
+    $incomingQuery->where('user_id', $userId);
+    $outgoingQuery->where('user_id', $userId);
 
-        $incomingQuery->where('user_id', $userId);
-        $outgoingQuery->where('user_id', $userId);
-    }
+} elseif ($role === 'admin') {
+    // Admin hanya lihat surat sesuai bidangnya
+    $incomingQuery->whereHas('user', function ($q) use ($bidang) {
+        $q->where('bidang', $bidang);
+    });
+    $outgoingQuery->whereHas('user', function ($q) use ($bidang) {
+        $q->where('bidang', $bidang);
+    });
+}
 
     // ===== Hari ini =====
     $todayIncomingLetter = (clone $incomingQuery)->today()->count();

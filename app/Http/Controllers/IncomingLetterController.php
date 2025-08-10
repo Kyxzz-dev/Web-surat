@@ -27,20 +27,22 @@ class IncomingLetterController extends Controller
      * @param Request $request
      * @return View
      */
-    public function index(Request $request): View
-    {
-        return view('pages.transaction.incoming.index', [
-            'data' => Letter::incoming()
-    ->when(auth()->user()->role === 'admin', function ($query) {
-    return $query->whereHas('user', function ($q) {
-        $q->where('bidang', auth()->user()->bidang);
-    });
-})
-    ->render($request->search),
-            'search' => $request->search,
-        ]);
-    }
+   public function index(Request $request): View
+{
+    return view('pages.transaction.incoming.index', [
+        'data' => Letter::incoming()
+            ->when(auth()->user()->role === 'admin', function ($query) {
+                // Admin hanya melihat surat sesuai bidangnya
+                return $query->whereHas('user', function ($q) {
+                    $q->where('bidang', auth()->user()->bidang);
+                });
+            })
+            // Super admin tidak difilter
+            ->render($request->search),
 
+        'search' => $request->search,
+    ]);
+}
     /**
      * Display a listing of the incoming letter agenda.
      *

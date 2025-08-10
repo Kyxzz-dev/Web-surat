@@ -7,7 +7,7 @@ return [
         'to' => 'Penerima',
         'reference_number' => 'Nomor Surat',
         'letter_date' => 'Tanggal Surat',
-        'received_date' => 'Tanggal Diterima',
+        'received_date' => 'Tanggal Pengambilan Nomor Surat',
         'description' => 'Perihal',
         'note' => 'Keterangan',
         'dispose' => 'Disposisi Surat',

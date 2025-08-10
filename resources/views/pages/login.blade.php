@@ -87,12 +87,14 @@
                             />
                         </div>
                         <div class="mb-3">
-                            <x-input-form
-                                name="password"
-                                type="password"
-                                :label="__('model.user.password')"
-                            />
-                        </div>
+    <label for="password" class="form-label">{{ __('model.user.password') }}</label>
+    <div class="position-relative">
+        <input type="password" name="password" id="password" class="form-control" />
+        <span class="toggle-password" onclick="togglePassword('password', this)">
+            <i class="bx bx-hide"></i>
+        </span>
+    </div>
+</div>
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="remember-me" name="remember">
@@ -124,3 +126,32 @@
 <!-- / Content -->
 </body>
 </html>
+<style>
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center; /* ini yang bikin icon bener-bener center */
+    cursor: pointer;
+    color: #6c757d;
+}
+.toggle-password:hover {
+    color: #333;
+}
+</style>
+
+<script>
+function togglePassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    const icon = el.querySelector('i');
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace('bx-hide', 'bx-show');
+    } else {
+        input.type = "password";
+        icon.classList.replace('bx-show', 'bx-hide');
+    }
+}
+</script>

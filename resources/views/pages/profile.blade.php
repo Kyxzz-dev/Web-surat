@@ -69,8 +69,10 @@
                                     <i class="bx bx-reset d-block d-sm-none"></i>
                                     <span class="d-none d-sm-block">{{ __('menu.general.cancel') }}</span>
                                 </button>
-
-                                <p class="text-muted mb-0">* Maksimal file 800 kb (JPG, PNG)</p>
+ <small class="form-text m-2" style="color: black;">
+                        <span style="color: red;">*</span> Maksimal file 800 kb (JPG, PNG).
+                    </small>
+                                <!-- <p class="text-muted mb-0">* Maksimal file 800 kb (JPG, PNG)</p> -->
                             </div>
                         </div>
                     </div>
