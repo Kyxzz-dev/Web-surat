@@ -8,7 +8,6 @@ use App\Enums\LetterType;
 use App\Models\Attachment;
 use Illuminate\Http\Request;
 use App\Models\Classification;
-use App\Models\LetterNumberPool;
 use App\Models\SubClassification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
@@ -238,6 +237,7 @@ if ($sub) {
                 $path = $attachment->storeAs('public/attachments', $filename);
 
                 Attachment::create([
+                    'path'      => $path,
                     'filename'  => $filename,
                     'extension' => $extension,
                     'user_id'   => auth()->id(),

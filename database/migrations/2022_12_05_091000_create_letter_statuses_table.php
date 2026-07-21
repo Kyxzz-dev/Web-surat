@@ -11,10 +11,12 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::table('letters', function (Blueprint $table) {
-            $table->string('letter_code')->nullable();
+        Schema::create('letter_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('status');
+            $table->timestamps();
         });
     }
 
@@ -23,10 +25,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('letters', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('letter_statuses');
     }
 };

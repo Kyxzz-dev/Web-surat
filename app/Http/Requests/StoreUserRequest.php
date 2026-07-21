@@ -37,10 +37,18 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required'],
             'email' => ['required', Rule::unique('users')],
             'phone' => ['nullable'],
+            'role' => ['required', Rule::in(['admin', 'staff'])],
         ];
+
+        // bidang wajib untuk role admin dan staff
+        if ($this->filled('role') && in_array($this->role, ['admin', 'staff'])) {
+            $rules['bidang'] = ['required', 'string'];
+        }
+
+        return $rules;
     }
 }

@@ -13,31 +13,44 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Buat Super Admin dulu
+        User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'nip' => '000000000000000000',
+                'role' => Role::SUPER_ADMIN->status(),
+                'bidang' => null,
+                'password' => bcrypt('password'),
+            ]
+        );
+
         $bidangList = ['Intelijen', 'Pengawasan', 'Umum', 'Perjalanan'];
 
         foreach ($bidangList as $bidang) {
-            // Pakai factory untuk admin tiap bidang
-            $admin = User::factory()->create([
-                'name' => "Admin $bidang",
-                'email' => strtolower("admin_$bidang@example.com"),
-                'role' => Role::ADMIN->status(),
-                'bidang' => $bidang,
-            ]);
+            $email = strtolower("admin_$bidang@example.com");
 
-            // Pakai factory juga untuk 2 staff, disambungkan ke admin di atas
-            User::factory(2)->create([
-                'role' => Role::STAFF->status(),
-                'bidang' => $bidang,
-                'admin_id' => $admin->id,
-            ]);
+            // Buat admin tiap bidang (hanya jika belum ada)
+            $admin = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => "Admin $bidang",
+                    'nip' => '000000000000000000',
+                    'role' => Role::ADMIN->status(),
+                    'bidang' => $bidang,
+                    'password' => bcrypt('password'),
+                ]
+            );
+
+            // Buat 2 staff untuk admin ini (hanya jika belum punya staff)
+            $existingStaff = User::where('admin_id', $admin->id)->count();
+            if ($existingStaff === 0) {
+                User::factory(2)->create([
+                    'role' => Role::STAFF->status(),
+                    'bidang' => $bidang,
+                    'admin_id' => $admin->id,
+                ]);
+            }
         }
-
-        // Tambah super admin
-        User::factory(2)->create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
-            'role' => Role::SUPER_ADMIN->status(),
-            'bidang' => null,
-        ]);
     }
 }

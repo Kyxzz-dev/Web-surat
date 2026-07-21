@@ -57,35 +57,13 @@ Sebuah aplikasi web yang dirancang untuk mengelola surat masuk, keluar, dan disp
    ```sh
    cp .env.example .env
    ```
-3. Sesuaikan `.env` dengan database Anda.
-4. Generate application key:
-   ```sh
-   php artisan key:generate
+3. docker compose up -d --build
    ```
-5. Buat symbolic link untuk storage:
-   ```sh
-   php artisan storage:link
+4. docker compose exec app composer install
    ```
-6. Jalankan migrasi database:
-   ```sh
-   php artisan migrate
+5. docker compose exec app php artisan key:generate
    ```
-7. Tambahkan akun administrator:
-   ```sh
-   php artisan db:seed --class=UserSeeder
-   ```
-8. Tambahkan konfigurasi awal:
-   ```sh
-   php artisan db:seed --class=ConfigSeeder
-   ```
-9. (Opsional) Tambahkan data dummy:
-   ```sh
-   php artisan db:seed
-   ```
-10. Jalankan aplikasi:
-   ```sh
-   php artisan serve
-   ```
+6. docker compose exec app php artisan migrate --seed
 
 ## ⏰ Pengaturan Zona Waktu
 Ubah `timezone` di `config/app.php` sesuai kebutuhan. Lihat daftar zona waktu di sini: [PHP Timezones](https://www.php.net/manual/en/timezones.php).

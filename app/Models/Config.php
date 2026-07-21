@@ -17,7 +17,7 @@ class Config extends Model
     public static function getValueByCode(\App\Enums\Config $code): string
     {
         $config = self::code($code)->first();
-        return $config->value;
+        return $config?->value ?? '';
     }
 
     public function scopeCode($query, \App\Enums\Config $code)

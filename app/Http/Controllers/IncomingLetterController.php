@@ -31,6 +31,10 @@ class IncomingLetterController extends Controller
 {
     return view('pages.transaction.incoming.index', [
         'data' => Letter::incoming()
+            ->when(auth()->user()->role === 'staff', function ($query) {
+                // Staff hanya melihat surat yang dia buat
+                return $query->where('user_id', auth()->id());
+            })
             ->when(auth()->user()->role === 'admin', function ($query) {
                 // Admin hanya melihat surat sesuai bidangnya
                 return $query->whereHas('user', function ($q) {
@@ -53,6 +57,9 @@ class IncomingLetterController extends Controller
     {
         return view('pages.transaction.incoming.agenda', [
            'data' => Letter::incoming()
+            ->when(auth()->user()->role === 'staff', function ($query) {
+                return $query->where('user_id', auth()->id());
+            })
     ->when(auth()->user()->role === 'admin', function ($query) {
                 return $query->whereHas('user', function ($q) {
                     $q->where('bidang', auth()->user()->bidang);
@@ -79,6 +86,9 @@ class IncomingLetterController extends Controller
     $title = App::getLocale() == 'id' ? "$agenda $letter" : "$letter $agenda";
 
     $data = Letter::incoming()
+        ->when(auth()->user()->role === 'staff', function ($query) {
+            return $query->where('user_id', auth()->id());
+        })
         ->when(auth()->user()->role === 'admin', function ($query) {
             return $query->bidang(auth()->user()->bidang); // filter berdasarkan bidang admin
         })
@@ -179,17 +189,7 @@ class IncomingLetterController extends Controller
 
         // Proses lampiran jika ada
         if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $filename = time() . '-' . str_replace(' ', '-', $file->getClientOriginalName());
-                $path = $file->storeAs('public/attachments', $filename);
-
-                $letter->attachments()->create([
-                    'file_path' => $path,
-                    'filename' => $filename,
-                    'extension' => $file->getClientOriginalExtension(),
-                    'user_id' => $user->id,
-                ]);
-            }
+            $this->handleAttachments($request->file('attachments'), $letter, $user);
         }
 
         DB::commit();
@@ -259,6 +259,7 @@ class IncomingLetterController extends Controller
             if ($path) {
                 // Create attachment record
                 Attachment::create([
+                    'path' => $path,
                     'filename' => $filename,
                     'extension' => $extension,
                     'user_id' => $user->id,

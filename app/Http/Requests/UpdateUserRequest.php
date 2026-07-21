@@ -44,14 +44,15 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required'],
             'email' => ['required', Rule::unique('users')->ignore($this->id)],
-            'new_password' => ['nullable', 'string', 'min:6'],
+            'new_password' => ['nullable', 'string', 'min:8'],
             'phone' => ['nullable'],
             'nip'   => ['nullable'],
             'is_active' => ['nullable'],
         ];
+
         // Tambahkan validasi password jika field diisi
         if ($this->filled('new_password')) {
             $rules['new_password'] = [
@@ -62,6 +63,7 @@ class UpdateUserRequest extends FormRequest
             ];
             $rules['new_password_confirmation'] = ['required'];
         }
+
         return $rules;
     }
 

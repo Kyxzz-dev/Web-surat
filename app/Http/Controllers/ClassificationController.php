@@ -82,10 +82,9 @@ class ClassificationController extends Controller
    public function destroy(Classification $classification): RedirectResponse
 {
     try {
-
+        // Cegah penghapusan jika masih ada sub-classification
         if ($classification->subClassifications()->exists()) {
-             $classification->delete();
-            return back()->with('success', __('menu.general.success'));
+            return back()->with('error', 'Tidak dapat menghapus klasifikasi yang masih memiliki sub-klasifikasi.');
         }
 
         $classification->delete();

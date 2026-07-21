@@ -119,6 +119,12 @@ public function print()
         try {
             $newUser = $request->validated();
             $newUser['password'] = Hash::make(Config::getValueByCode(ConfigEnum::DEFAULT_PASSWORD));
+            
+            // Set admin_id jika role staff (admin yang membuat)
+            if ($newUser['role'] === 'staff') {
+                $newUser['admin_id'] = auth()->id();
+            }
+            
             User::create($newUser);
             return back()->with('success', __('menu.general.success'));
         } catch (\Throwable $exception) {

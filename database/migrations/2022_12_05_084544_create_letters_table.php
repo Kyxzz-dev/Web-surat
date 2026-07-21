@@ -19,26 +19,20 @@ return new class extends Migration
             $table->string('reference_number')->unique();
             $table->string('from')->nullable(); // nullable karena tidak diperlukan untuk outgoing
             $table->string('to')->nullable(); // nullable karena tidak diperlukan untuk incoming
-            $table->string('letter_nature');
+            $table->enum('letter_nature', ['Segera','Sangat Segera','Biasa','Rahasia', 'Sangat Rahasia']);
             $table->date('letter_date');
             $table->text('description');
             $table->text('note')->nullable();
-            $table->unsignedBigInteger('user_id');
-            $table->enum('letter_nature', ['Segera','Sangat Segera','Biasa','Rahasia', 'Sangat Rahasia'])->after('reference_number');
             // Field khusus untuk surat keluar - harus nullable
             $table->string('agenda_number')->nullable();
             $table->date('received_date')->nullable();
             $table->string('letter_code')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('classification_code')->nullable();
-            $table->unsignedBigInteger('sub_classification_id')->nullable();
             
             $table->timestamps();
             
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('classification_code')->references('id')->on('classifications');
-            $table->foreign('sub_classification_id')->references('id')->on('sub_classifications');
         });
     }
 
