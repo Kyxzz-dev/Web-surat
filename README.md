@@ -57,14 +57,19 @@ Sebuah aplikasi web yang dirancang untuk mengelola surat masuk, keluar, dan disp
    ```sh
    cp .env.example .env
    ```
-3. docker compose up -d --build
+3. ```sh
+   docker compose up -d --build
    ```
-4. docker compose exec app composer install
+4. ```sh
+   docker compose exec app composer install
    ```
-5. docker compose exec app php artisan key:generate
+5. ```sh
+   docker compose exec app php artisan key:generate
    ```
-6. docker compose exec app php artisan migrate --seed
-
+6. ```sh
+   docker compose exec app php artisan migrate --seed
+   ```
+   
 ## ⏰ Pengaturan Zona Waktu
 Ubah `timezone` di `config/app.php` sesuai kebutuhan. Lihat daftar zona waktu di sini: [PHP Timezones](https://www.php.net/manual/en/timezones.php).
 
